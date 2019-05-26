@@ -8,11 +8,22 @@ features which are not implemented in mGUXDemo:
 
 1. A smaller framework derived from mGUXDemo.
 1. Using GNU gettext for localization.
-1. Different input method with touch panel:
+1. Different input methods with touch panel:
    * A screen locker with digital password.
    * A soft keyboard to input Latin, Chinese, and symbol characters.
-1. Interacting with system services, for example:
-   * Getting WiFi hotspot list and connecting to WiFi hotspot.
+1. Interacting with system services by using an asynchronous task thread,
+for example:
+   * Getting WiFi hotspots list and connecting to a specific WiFi hotspot.
+   * Getting system events to updating the icons on status bar.
+1. Message screen and toast window.
+
+This demo is a simplified edition of a real product. So it can be
+a very good start of one application which is based on MiniGUI.
+
+Note that the system services are fake ones in the demo. You may need
+to replace them with a real mechanism to interact with the underlying
+services. In the real product, we use `ubus` of OpenWRT as the
+mechanism to interact with the system services.
 
 ## Prerequisites
 
