@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 
-AM_CPPFLAGS=-I../common/include/ -Imisc/
+AM_CPPFLAGS=-I../common/include/ -I../fakejbus/ -Imisc/
 
 SUBDIRS=res misc apps
 
