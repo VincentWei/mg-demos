@@ -89,7 +89,7 @@
 // environment keys
 #define ENV_KEY_RES_PATH   "CBPLUS_UI_RES_PATH" 
 #define ENV_KEY_CFG_PATH   "CBPLUS_UI_CFG_PATH" 
-#define CFG_FILE_NAME      "cbplus-device-gui.cfg"
+#define CFG_FILE_NAME      "cbplusui.cfg"
 
 // resource name
 // global fonts

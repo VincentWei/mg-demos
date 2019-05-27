@@ -1207,7 +1207,7 @@ static NCS_EVENT_HANDLER _statusbar_handlers [] = {
     {0, NULL}
 };
 
-static HPACKAGE load_res_package (void)
+static void set_res_path (void)
 {
     char res_path [MAX_PATH + 1];
 
@@ -1227,9 +1227,6 @@ static HPACKAGE load_res_package (void)
     }
 
     SetResPath (res_path);
-    strcat (res_path, "ui.res");
-    return ncsLoadResPackage (res_path);
-
 }
 
 static NCS_WND_TEMPLATE _ctrl_templ[] =
@@ -1276,7 +1273,6 @@ int key_hook(void* context, HWND dst_wnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 int main (int argc, const char* argv[])
 {
-    HPACKAGE hPackage = HPACKAGE_NULL;
     MSG Msg;
 
     if (InitGUI (argc, argv) != 0) {
@@ -1318,22 +1314,18 @@ int main (int argc, const char* argv[])
     DO_REGISTER_ACTIVITY (SettingTransferProtocolActivity);
     DO_REGISTER_ACTIVITY (SettingHotspotActivity);
 
-    hPackage = load_res_package ();
-    if (hPackage == HPACKAGE_NULL) {
-        _ERR_PRINTF ("CBPlusGUI>main: failed to load resource package.\n");
-        return 2;
-    }
+    set_res_path ();
 
     /* load resource */
     unsigned cnt = loadResByTag (globalResList, 0);
     if (cnt < (TABLESIZE (globalResList) - 1)) {
         _ERR_PRINTF ("CBPlusGUI>main: failed to load global resource.\n");
-        return 3;
+        return 2;
     }
 
     if (!RTCFGSERVICE->load ()) {
         _ERR_PRINTF ("CBPlusGUI>main: failed when loading run-time conf.\n");
-        return FALSE;
+        return 3;
     }
     RTCFGSERVICE->getLanguageSettings ();
     RTCFGSERVICE->getTimeZone ();
@@ -1387,7 +1379,6 @@ int main (int argc, const char* argv[])
 
     releaseRefMemDC32b ();
     unloadResByTag (globalResList, 0);
-    ncsUnloadResPackage (hPackage);
 
     ncs4TouchUninitialize ();
     ncsUninitialize ();
