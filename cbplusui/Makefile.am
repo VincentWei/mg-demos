@@ -1,15 +1,15 @@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 
-AM_CPPFLAGS=-I../common/include/ -I../fakejbus/ -Imisc/
+AM_CPPFLAGS=-I../common/include/ -Ifakejbus/ -Imisc/
 
-SUBDIRS=res misc apps
+SUBDIRS=res misc fakejbus apps
 
 noinst_PROGRAMS=cbplusui
 
 APP_LIBS = \
     apps/libapps.la \
     misc/libmisc.la \
-    ../fakejbus/libjbus.la \
+    fakejbus/libjbus.la \
     ../common/src/libcommon.la
 
 cbplusui_SOURCES = \

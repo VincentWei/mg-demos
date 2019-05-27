@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
-AM_CPPFLAGS=-I../../common/include -I../../fakejbus -I../misc -I../
+AM_CPPFLAGS=-I../../common/include -I../fakejbus -I../misc -I../
 
 noinst_LTLIBRARIES=libapps.la
 

@@ -35,8 +35,8 @@ int jbus_connect(void)
 void jbus_run(void)
 {
     while (1) {
-        usleep (100000);
-    };
+        usleep (10000);
+    }
 }
 
 void jbus_clear(void)
