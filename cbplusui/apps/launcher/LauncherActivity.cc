@@ -35,12 +35,8 @@ typedef struct _APP_INFO {
 static APP_INFO _myapp_info [] = {
     {IDC_APP_MIN + 0,  "AUCActivity",           "images/launcher/icon-app-auto-upload.png"},
     {IDC_APP_MIN + 1,  "MUCActivity",           "images/launcher/icon-app-manual-upload.png"},
-#ifdef OEM_TPP
-    {IDC_APP_MIN + 2,  "SettingMainActivity",   "images/launcher/icon-app-settings.png"},
-#else
     {IDC_APP_MIN + 2,  "SettingWifiActivity",   "images/launcher/icon-app-settings-wifi.png"},
     {IDC_APP_MIN + 3,  "SettingMainActivity",   "images/launcher/icon-app-settings.png"},
-#endif
 #if 0
     {IDC_APP_MIN + 2,  "RmtCtlWLANActivity",    "images/launcher/icon-app-remote-control-wlan.png"},
     {IDC_APP_MIN + 3,  "RmtCtlHotspotActivity", "images/launcher/icon-app-remote-control-hotspot.png"},
@@ -51,12 +47,8 @@ static APP_INFO _myapp_info [] = {
 };
 
 #define RES_ICON_CAMERA     "images/launcher/icon-camera.png"
-#ifdef OEM_TPP
-    #define RES_ICON_CLOUD      "images/launcher/icon-order.png"
-#else
-    #define RES_ICON_CLOUD      "images/launcher/icon-cloud.png"
-    #define RES_ICON_FTP        "images/launcher/icon-ftp.png"
-#endif
+#define RES_ICON_CLOUD      "images/launcher/icon-cloud.png"
+#define RES_ICON_FTP        "images/launcher/icon-ftp.png"
 
 static RES_NODE _myres_list [] = {
     {RES_ICON_CAMERA, RES_TYPE_IMAGE, 16, 0},
@@ -535,11 +527,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
         y: MARGIN_V + ICON_SIZE_H,
         w: ACTIVITY_W - ICON_SIZE_W - MARGIN_H*2,
         h: ICON_SIZE_H - 5,
-#ifdef OEM_TPP
-        style: WS_NONE,
-#else
         style: WS_VISIBLE,
-#endif
         ex_style: WS_EX_NONE,
         caption: "0 GB/0 GB",
         props: _props_static,
@@ -551,11 +539,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
         y: MARGIN_V + ICON_SIZE_H + ICON_SIZE_H - 5,
         w: ACTIVITY_W - ICON_SIZE_W - MARGIN_H*2,
         h: 5,
-#ifdef OEM_TPP
-        style: WS_NONE,
-#else
         style: WS_VISIBLE | WS_BORDER,
-#endif
         ex_style: WS_EX_NONE,
         caption: "",
         props: _props_space,
@@ -567,11 +551,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
         y: MARGIN_V + ICON_SIZE_H,
         w: ACTIVITY_W - ICON_SIZE_W - MARGIN_H*2 - BUTTON_SIZE_W,
         h: ICON_SIZE_H/2,
-#ifdef OEM_TPP
-        style: WS_VISIBLE,
-#else
         style: WS_NONE,
-#endif
         ex_style: WS_EX_NONE,
         caption: "订单：未知",
         props: _props_static,
@@ -583,11 +563,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
         y: MARGIN_V + ICON_SIZE_H + ICON_SIZE_H/2,
         w: ACTIVITY_W - ICON_SIZE_W - MARGIN_H*2,
         h: ICON_SIZE_H/2,
-#ifdef OEM_TPP
-        style: WS_VISIBLE,
-#else
         style: WS_NONE,
-#endif
         ex_style: WS_EX_NONE,
         caption: "N/A",
         props: _props_static,
@@ -599,11 +575,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
         y: MARGIN_V + ICON_SIZE_H,
         w: BUTTON_SIZE_W,
         h: ICON_SIZE_H / 2,
-#ifdef OEM_TPP
-        style: WS_VISIBLE | NCSS_NOTIFY,
-#else
         style: WS_NONE,
-#endif
         ex_style: WS_EX_NONE,
         caption: "刷新",
     },
