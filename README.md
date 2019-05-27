@@ -19,7 +19,7 @@ for example:
 
 Currently, there are two demos included in this project.
 
-## cbplusui
+## CBPlusUI
 
 This demo is a simplified edition of a real product called `CBPlus`.
 So it can be a very good start of one application which is based on MiniGUI.
@@ -54,13 +54,17 @@ or
 https://github.com/VincenWei/build-minigui-4.0
 
 Otherwise, you can use the following commands to configure, make, install,
-and run it, if you have installed the dependent libraries listed above.
+and run the demos, once you have installed the dependent libraries listed
+above.
 
-Run
+To build the demos:
 
     $ ./autogen.sh; # if you got the source from GitHub repo
     $ ./configure;
     $ make
+
+To run a demo:
+
     $ cd cbplusui
     $ ./cbplusui
 
