@@ -250,6 +250,9 @@ static NCS_EVENT_HANDLER mymain_handlers [] = {
     {MSG_ASYNC_TASK_FINISHED, reinterpret_cast<void*>(mymain_onAsyncTaskFinished)},
     {MSG_USER_APP_READY, reinterpret_cast<void*>(mymain_onReady)},
     {MSG_CLOSE, reinterpret_cast<void*>(mymain_onClose)},
+    {MSG_LBUTTONDOWN, reinterpret_cast<void*>(SpeedMeterMessageHandler)},
+    {MSG_LBUTTONUP, reinterpret_cast<void*>(SpeedMeterMessageHandler)},
+    {MSG_MOUSEMOVE, reinterpret_cast<void*>(SpeedMeterMessageHandler)},
     {0, NULL}
 };
 
