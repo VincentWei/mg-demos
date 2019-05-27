@@ -9,8 +9,8 @@ features which are not implemented in mGUXDemo:
 1. A smaller framework derived from mGUXDemo (`common/`).
 1. Using GNU gettext for localization.
 1. Different input methods with touch panel:
-   * A screen locker with digital password.
-   * A soft keyboard to input Latin, Chinese, and symbol characters.
+   * Screen locker with digital password.
+   * A soft keyboard to input Latin letters, digits, and symbol characters.
 1. Interacting with system services by using an asynchronous task thread,
 for example:
    * Getting WiFi hotspots list and connecting to a specific WiFi hotspot.
