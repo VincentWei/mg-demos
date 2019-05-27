@@ -69,6 +69,7 @@ AC_OUTPUT(
 Makefile
 common/Makefile
 common/src/Makefile
+fakejbus/Makefile
 cbplusui/Makefile
 cbplusui/res/Makefile
 cbplusui/misc/Makefile

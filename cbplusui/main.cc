@@ -1178,8 +1178,6 @@ static void statusBar_onDestroy (mWidget* self, UINT message)
     PostQuitMessage (self->hwnd);
 }
 
-extern "C" int switch_back_light();
-
 static BOOL statusBar_onKeyDown (mMainWnd* self, UINT message, int code, DWORD key_status)
 {
 
@@ -1187,7 +1185,7 @@ static BOOL statusBar_onKeyDown (mMainWnd* self, UINT message, int code, DWORD k
         return FALSE;
     }
 
-    switch_back_light();
+    _ERR_PRINTF("Power key pressed, but not implemented.\n");
     return TRUE;
 }
 

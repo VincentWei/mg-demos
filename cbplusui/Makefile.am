@@ -7,8 +7,9 @@ SUBDIRS=res misc apps
 noinst_PROGRAMS=cbplusui
 
 APP_LIBS = \
-    misc/libmisc.la \
     apps/libapps.la \
+    misc/libmisc.la \
+    ../fakejbus/libjbus.la \
     ../common/src/libcommon.la
 
 cbplusui_SOURCES = \
