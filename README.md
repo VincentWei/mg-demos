@@ -1,12 +1,12 @@
-# A MiniGUI Demo for Small Screen Application
+# MiniGUI Demos
 
-This is a comprehensive demonstration of MiniGUI and its key components,
-including mGEff, mGPlus, mGNCS, and mGNCS4Touch for small screen apps.
+This is a set of comprehensive demonstrations of MiniGUI and
+its key components, including mGEff, mGPlus, mGNCS, and mGNCS4Touch.
 
-This demo is a supplement to [mGUXDemo]. It illustrates the following
+The demos is a supplement to [mGUXDemo]. It illustrates the following
 features which are not implemented in mGUXDemo:
 
-1. A smaller framework derived from mGUXDemo.
+1. A smaller framework derived from mGUXDemo (`common/`).
 1. Using GNU gettext for localization.
 1. Different input methods with touch panel:
    * A screen locker with digital password.
@@ -61,7 +61,7 @@ Run
 
 ## Copying
 
-    Copyright (C) 2019, Beijing FMSoft Technologies Co., Ltd.
+    Copyright (C) 2019 Beijing FMSoft Technologies Co., Ltd.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
