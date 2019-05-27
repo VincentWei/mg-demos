@@ -3,7 +3,7 @@
 This is a set of comprehensive demonstrations of MiniGUI and
 its key components, including mGEff, mGPlus, mGNCS, and mGNCS4Touch.
 
-The demos is a supplement to [mGUXDemo]. It illustrates the following
+The demos are supplements to [mGUXDemo]. They illustrate the following
 features which are not implemented in mGUXDemo:
 
 1. A smaller framework derived from mGUXDemo (`common/`).
@@ -17,13 +17,19 @@ for example:
    * Getting system events to updating the icons on status bar.
 1. Message screen and toast window.
 
-This demo is a simplified edition of a real product. So it can be
-a very good start of one application which is based on MiniGUI.
+Currently, there are two demos included in this project.
+
+## cbplusui
+
+This demo is a simplified edition of a real product called `CBPlus`.
+So it can be a very good start of one application which is based on MiniGUI.
 
 Note that the system services are fake ones in the demo. You may need
 to replace them with a real mechanism to interact with the underlying
 services. In the real product, we use `ubus` of OpenWRT as the
 mechanism to interact with the system services.
+
+## 
 
 ## Prerequisites
 
@@ -55,9 +61,8 @@ Run
     $ ./autogen.sh; # if you got the source from GitHub repo
     $ ./configure;
     $ make
-    $ sudo make install
-    $ cd /usr/local/bin
-    $ ./mguxdemo
+    $ cd cbplusui
+    $ ./cbplusui
 
 ## Copying
 
@@ -74,6 +79,10 @@ Run
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+Note that the copyright of the resource assets included in the demos
+might be reserved by the copyright owner. For more information,
+please see the README files in the sub directories.
 
 [mGUXDemo]: https://github.com/VincentWei/cell-phone-ux-demo
 
