@@ -26,16 +26,16 @@ int jbus_add_event_handler(const char *event, jbus_event_handler_t handler)
     return JBUS_SUCCESS;
 }
 
-int jbus_connect()
+int jbus_connect(void)
 {
     return JBUS_SUCCESS;
 }
 
-void jbus_run()
+void jbus_run(void)
 {
 }
 
-void jbus_clear()
+void jbus_clear(void)
 {
 }
 
