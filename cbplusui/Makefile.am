@@ -16,7 +16,7 @@ cbplusui_SOURCES = \
     resource.h \
     main.cc
 
-cbplusui_LDADD = $(APP_LIBS) -lefence
+cbplusui_LDADD = $(APP_LIBS)
 
 EXTRA_DIST = README.md
 

@@ -87,18 +87,27 @@
 #define IDC_RIGHT_BUTTON    706
 
 // environment keys
-#define ENV_KEY_RES_PATH   "CBPLUS_UI_RES_PATH" 
-#define ENV_KEY_CFG_PATH   "CBPLUS_UI_CFG_PATH" 
+#define ENV_KEY_RES_PATH   "CBPLUS_UI_RES_PATH"
+#define ENV_KEY_CFG_PATH   "CBPLUS_UI_CFG_PATH"
 #define CFG_FILE_NAME      "cbplusui.cfg"
 
 // resource name
 // global fonts
+#if (_MINIGUI_VERSION_CODE >= _VERSION_CODE(4,0,0))
+#define GLOBAL_FONT_XS      "ttf-HanSans-rrncns-*-12-UTF-8"
+#define GLOBAL_FONT_SM      "ttf-HanSans-rrncns-*-14-UTF-8"
+#define GLOBAL_FONT_NM      "ttf-HanSans-rrncns-*-16-UTF-8"
+#define GLOBAL_FONT_LG      "ttf-HanSans-rrncns-*-20-UTF-8"
+#define GLOBAL_FONT_XL      "ttf-HanSans-rrncns-*-26-UTF-8"
+#define GLOBAL_FONT_XXL     "ttf-HanSans-rrncns-*-36-UTF-8"
+#else
 #define GLOBAL_FONT_XS      "ttf-HanSans-srncnn-*-12-UTF-8"
 #define GLOBAL_FONT_SM      "ttf-HanSans-srncnn-*-14-UTF-8"
 #define GLOBAL_FONT_NM      "ttf-HanSans-srncnn-*-16-UTF-8"
 #define GLOBAL_FONT_LG      "ttf-HanSans-srncnn-*-20-UTF-8"
 #define GLOBAL_FONT_XL      "ttf-HanSans-srncnn-*-26-UTF-8"
 #define GLOBAL_FONT_XXL     "ttf-HanSans-srncnn-*-36-UTF-8"
+#endif
 
 // fonts for title, subtitle, and toast
 #define FONT_TITLE      GLOBAL_FONT_NM
@@ -198,5 +207,5 @@ float statusBar_getSpaceInfo (int spaceId);
 }
 #endif
 
-#endif   /* ----- #ifndef __RESOURCE_INC  ----- */
+#endif /* __RESOURCE_INC */
 

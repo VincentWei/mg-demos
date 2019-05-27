@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include <stdio.h>
 
 #include "jbus.h"
@@ -33,6 +34,9 @@ int jbus_connect(void)
 
 void jbus_run(void)
 {
+    while (1) {
+        usleep (100000);
+    };
 }
 
 void jbus_clear(void)
