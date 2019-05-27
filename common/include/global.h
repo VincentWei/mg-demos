@@ -43,9 +43,9 @@
     #define ACTIVITY_PUSHED         0
     #define ACTIVITY_POPPED         1
 
-#define MSG_USER_IDLE	            (MSG_USER + 707)
-#define MSG_USER_CLICK	            (MSG_USER + 708)
-#define MSG_USER_BACK	            (MSG_USER + 709)
+#define MSG_USER_IDLE               (MSG_USER + 707)
+#define MSG_USER_CLICK              (MSG_USER + 708)
+#define MSG_USER_BACK               (MSG_USER + 709)
 #define MSG_USER_RETURN_TO_STANDBY  (MSG_USER + 710)
 #define MSG_USER_STATEMACHINE_EVENT (MSG_USER + 711)
 

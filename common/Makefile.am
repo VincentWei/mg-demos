@@ -1,0 +1,6 @@
+AUTOMAKE_OPTIONS = foreign
+
+SUBDIRS=src
+DIST_SUBDIRS=include
+
+EXTRA_DIST = README.md
