@@ -19,8 +19,21 @@ libapps_la_SOURCES= \
     MiscService.hh \
     MenuListPiece.cc \
     MenuListPiece.hh \
+    UploadFormatActivity.cc \
+    UploadFormatActivity.hh \
     launcher/LauncherActivity.cc \
     launcher/LauncherActivity.hh \
+    auto-upload-cloud/AUCActivity.hh \
+    auto-upload-cloud/AUCActivity.cc \
+    auto-upload-cloud/AUCActivity.hh \
+    auto-upload-cloud/AUCSettingsActivity.cc \
+    auto-upload-cloud/AUCSettingsActivity.hh \
+    manual-upload-cloud/MUCActivity.cc \
+    manual-upload-cloud/MUCActivity.hh \
+    manual-upload-cloud/MUCTimeActivity.cc \
+    manual-upload-cloud/MUCTimeActivity.hh \
+    manual-upload-cloud/MUCSettingsActivity.cc \
+    manual-upload-cloud/MUCSettingsActivity.hh \
     settings/SettingWifiListActivity.cc \
     settings/SettingWifiListActivity.hh \
     settings/SettingWifiPasswordActivity.cc \

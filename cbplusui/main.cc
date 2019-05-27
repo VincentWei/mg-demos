@@ -1293,6 +1293,12 @@ int main (int argc, const char* argv[])
     MGNCS_INIT_CLASS (mMenuListPiece);
 
     DO_REGISTER_ACTIVITY (LauncherActivity);
+    DO_REGISTER_ACTIVITY (AUCActivity);
+    DO_REGISTER_ACTIVITY (AUCSettingsActivity);
+    DO_REGISTER_ACTIVITY (UploadFormatActivity);
+    DO_REGISTER_ACTIVITY (MUCActivity);
+    DO_REGISTER_ACTIVITY (MUCTimeActivity);
+    DO_REGISTER_ACTIVITY (MUCSettingsActivity);
     DO_REGISTER_ACTIVITY (SettingMainActivity);
     DO_REGISTER_ACTIVITY (SettingLanguageActivity);
     DO_REGISTER_ACTIVITY (SettingCheckNetworkActivity);
