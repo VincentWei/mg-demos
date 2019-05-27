@@ -45,4 +45,6 @@
 /depcomp
 /install-sh
 /libtool
+Makefile
+Makefile.in
 

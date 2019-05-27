@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.60)
 AC_INIT(mg-demos,1.0.0)
-AC_CONFIG_SRCDIR(small-screen/main.cc)
+AC_CONFIG_SRCDIR(cbplusui/main.cc)
 
 dnl ========================================================================
 dnl Need for cross-compiling
@@ -69,8 +69,8 @@ AC_OUTPUT(
 Makefile
 common/Makefile
 common/src/Makefile
-small-screen/Makefile
-small-screen/res/Makefile
-small-screen/misc/Makefile
-small-screen/apps/Makefile
+cbplusui/Makefile
+cbplusui/res/Makefile
+cbplusui/misc/Makefile
+cbplusui/apps/Makefile
 )

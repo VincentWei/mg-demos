@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS=common small-screen
+SUBDIRS=common cbplusui
 DIST_SUBDIRS=m4
 
 EXTRA_DIST = README.md

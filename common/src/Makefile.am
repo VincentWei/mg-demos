@@ -6,9 +6,7 @@ libcommon_la_SOURCES= \
     Activity.cc \
     ActivityStack.cc \
     AsyncTask.cc \
-    cJSON.c \
     ContentValues.cc \
-    md5.c \
     MyGetText.cc \
     NCSActivity.cc \
     SQLiteCursor.cc \
@@ -18,5 +16,7 @@ libcommon_la_SOURCES= \
     TransitionHover.cc \
     TransitionNoInput.cc \
     TransitionStandStill.cc \
+    utility.cc \
     utilities.c \
-    utility.cc
+    cJSON.c \
+    md5.c
