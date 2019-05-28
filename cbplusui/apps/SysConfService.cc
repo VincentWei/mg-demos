@@ -241,29 +241,6 @@ bool SysConfService::parseConfig (cJSON* root)
                     m_muc_opts.writeLoc = atoi (value->valuestring);
                 }
             }
-            else if (strcasecmp (module->valuestring, "manualUploadCloud") == 0) {
-                if (strcasecmp (key->valuestring, "filter") == 0) {
-                    if (value->type != cJSON_String) {
-                        goto error;
-                    }
-
-                    m_muc_opts.filter = atoi (value->valuestring);
-                }
-                else if (strcasecmp (key->valuestring, "autoDel") == 0) {
-                    if (value->type != cJSON_String) {
-                        goto error;
-                    }
-
-                    m_muc_opts.autoDel = atoi (value->valuestring);
-                }
-                else if (strcasecmp (key->valuestring, "writeLoc") == 0) {
-                    if (value->type != cJSON_String) {
-                        goto error;
-                    }
-
-                    m_muc_opts.writeLoc = atoi (value->valuestring);
-                }
-            }
             else if (strcasecmp (module->valuestring, "ftp") == 0) {
                 if (strcasecmp (key->valuestring, "host") == 0) {
                     if (value->type != cJSON_String) {
