@@ -33,6 +33,24 @@
 #define LEN_FTP_PORT        31
 #define LEN_FTP_USER        127
 #define LEN_FTP_PASSWORD    127
+#define LEN_WIFI_SSID       127
+#define LEN_WIFI_PASSWORD   127
+
+#define NETWORK_TYPE_MOBILE         0
+#define NETWORK_TYPE_WIFI           1
+#define NETWORK_TYPE_BLUETOOTH      2
+#define NETWORK_TYPE_ETHERNE        3
+
+#define NETWORK_STATE_CONNECTED         0
+#define NETWORK_STATE_CONNECTING        1
+#define NETWORK_STATE_SUSPENDED         2
+#define NETWORK_STATE_DISCONNECTING     3
+#define NETWORK_STATE_DISCONNECTED      4
+#define NETWORK_STATE_NO_MEDIA          5
+#define NETWORK_STATE_DISABLED          6
+#define NETWORK_STATE_ABSENT            7
+
+#define NETWORK_STATE_UNKNOWN           255
 
 typedef struct _DeviceState {
     char timeZone[LEN_TIMEZONE + 1];
@@ -50,6 +68,17 @@ typedef struct _DeviceState {
     char ftpPort[LEN_FTP_PORT + 1];
     char ftpUser[LEN_FTP_USER + 1];
     char ftpPassword[LEN_FTP_PASSWORD + 1];
+
+    int lteState;
+    int lteSignal;
+
+    int  wifiState;
+    char wifiSSID[LEN_WIFI_SSID + 1];
+    char wifiPass[LEN_WIFI_PASSWORD + 1];
+    int  wifiAp;
+    char wifiApSSID[LEN_WIFI_SSID + 1];
+    char wifiApPass[LEN_WIFI_PASSWORD + 1];
+    int  wifiSignal;
 } DeviceState;
 
 static DeviceState device_state;
@@ -71,6 +100,12 @@ static void init_device_state(void)
     device_state.ftpPort[0] = 0;
     device_state.ftpUser[0] = 0;
     device_state.ftpPassword[0] = 0;
+
+    device_state.lteState = NETWORK_STATE_CONNECTED;
+    device_state.lteSignal = 75;
+    device_state.wifiState = NETWORK_STATE_DISCONNECTED;
+    device_state.wifiSignal = 0;
+    device_state.wifiAp = 0;
 }
 
 static void set_sys_time_zone (const char* tz)
@@ -674,9 +709,167 @@ static char* on_firmware_method (const char* method, cJSON* msg)
 
 static char* on_network_method (const char* method, cJSON* msg)
 {
+    char* res = NULL;
+
     if (strcmp(method, "getState") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": 0,"
+            "\"data\": {"
+                "\"currentSSID\": %s,"
+                "\"globalState\": %d,"
+                "\"networkInfo\": ["
+                    "{"
+                        "\"type\": 0,"
+                        "\"state\": %d"
+                    "},"
+                    "{"
+                        "\"type\": 1,"
+                        "\"state\": %d"
+                    "},"
+                    "{"
+                        "\"type\": 2,"
+                        "\"state\": 6"
+                    "},"
+                    "{"
+                        "\"type\": 3,"
+                        "\"state\": 7"
+                    "}"
+                "]"
+            "}"
+        "}";
+
+        int globalState = NETWORK_STATE_DISCONNECTED;
+        if (device_state.lteState == NETWORK_STATE_CONNECTED ||
+                device_state.wifiState == NETWORK_STATE_CONNECTED) {
+            globalState = NETWORK_STATE_CONNECTED;
+        }
+
+        res = calloc(sizeof(char), strlen(my_state) + sizeof(DeviceState));
+        if (res) {
+            if (device_state.wifiState == NETWORK_STATE_CONNECTED) {
+                char buff[LEN_WIFI_SSID + 5];
+                memset(buff, 0, sizeof(buff));
+                sprintf(buff, "\"%s\"", device_state.wifiSSID);
+                sprintf(res, my_state, buff,
+                    globalState, device_state.lteState, device_state.wifiState);
+            }
+            else {
+                sprintf(res, my_state, "null",
+                    globalState, device_state.lteState, device_state.wifiState);
+            }
+        }
+    }
+    else if (strcmp(method, "getApState") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": 0,"
+            "\"data\": {"
+                "\"state\": %d,"
+                "\"ssid\": \"%s\","
+                "\"password\": \"%s\""
+            "}"
+        "}";
+
+        res = calloc(sizeof(char), strlen(my_state) + sizeof(DeviceState));
+        if (res) {
+            sprintf(res, my_state,
+                    device_state.wifiAp,
+                    device_state.wifiApSSID, device_state.wifiApPass);
+        }
     }
     else if (strcmp(method, "scanWiFi") == 0) {
+        static const char* my_result = "{"
+            "\"retCode\": 0,"
+            "\"data\": {"
+                "\"currentSSID\": %s,"
+                "\"scanResult\": ["
+                    "{"
+                        "\"ssid\": \"示例假热点，下同\","
+                        "\"bssid\": \"f0:b4:29:24:18:03\","
+                        "\"level\": \"-70\","
+                        "\"capabilities\": \"[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][WPS][ESS]\","
+                        "\"frequency\": \"2442\""
+                    "},"
+                    "{"
+                        "\"ssid\": \"Joobot\","
+                        "\"bssid\": \"f0:b4:29:24:18:eb\","
+                        "\"level\": \"-38\","
+                        "\"capabilities\": \"[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][WPS][ESS]\","
+                        "\"frequency\": \"2457\""
+                    "},"
+                    "{"
+                        "\"ssid\": \"FakeWiFi2\","
+                        "\"bssid\": \"f0:b4:29:24:18:01\","
+                        "\"level\": \"-38\","
+                        "\"capabilities\": \"[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][WPS][ESS]\","
+                        "\"frequency\": \"2457\""
+                    "},"
+                    "{"
+                        "\"ssid\": \"fake2\","
+                        "\"bssid\": \"f0:b4:29:24:18:02\","
+                        "\"level\": \"-70\","
+                        "\"capabilities\": \"[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][WPS][ESS]\","
+                        "\"frequency\": \"2442\""
+                    "},"
+                    "{"
+                        "\"ssid\": \"Fake5G\","
+                        "\"bssid\": \"f0:b4:29:24:18:04\","
+                        "\"level\": \"-58\","
+                        "\"capabilities\": \"[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][WPS][ESS]\","
+                        "\"frequency\": \"5745\""
+                    "},"
+                    "{"
+                        "\"ssid\": \"fake555aaa\","
+                        "\"bssid\": \"f0:b4:29:24:18:05\","
+                        "\"level\": \"-100\","
+                        "\"capabilities\": \"[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][WPS][ESS]\","
+                        "\"frequency\": \"2442\""
+                    "},"
+                    "{"
+                        "\"ssid\": \"fake666bbb\","
+                        "\"bssid\": \"f0:b4:29:24:18:06\","
+                        "\"level\": \"-88\","
+                        "\"capabilities\": \"[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][WPS][ESS]\","
+                        "\"frequency\": \"2442\""
+                    "},"
+                    "{"
+                        "\"ssid\": \"fake777ccc\","
+                        "\"bssid\": \"f0:b4:29:24:18:07\","
+                        "\"level\": \"-98\","
+                        "\"capabilities\": \"[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][WPS][ESS]\","
+                        "\"frequency\": \"2442\""
+                    "},"
+                    "{"
+                        "\"ssid\": \"fake888ddd\","
+                        "\"bssid\": \"f0:b4:29:24:18:08\","
+                        "\"level\": \"-58\","
+                        "\"capabilities\": \"[WPA-PSK-CCMP+TKIP][WPA2-PSK-CCMP+TKIP][WPS][ESS]\","
+                        "\"frequency\": \"2442\""
+                    "},"
+                    "{"
+                        "\"ssid\": \"OpenWiFi\","
+                        "\"bssid\": \"f0:b4:29:24:18:09\","
+                        "\"level\": \"-38\","
+                        "\"capabilities\": \"[ESS]\","
+                        "\"frequency\": \"2442\""
+                    "}"
+                "]"
+            "}"
+        "}";
+
+        res = calloc(sizeof(char), strlen(my_result) + sizeof(DeviceState));
+        if (res) {
+            if (device_state.wifiState == NETWORK_STATE_CONNECTED) {
+                char buff[LEN_WIFI_SSID + 5];
+                memset(buff, 0, sizeof(buff));
+                sprintf(buff, "\"%s\"", device_state.wifiSSID);
+                sprintf(res, my_result, buff);
+            }
+            else {
+                sprintf(res, my_result, "null");
+            }
+
+            sleep(3);
+        }
     }
     else if (strcmp(method, "connectWiFi") == 0) {
     }
@@ -688,7 +881,7 @@ static char* on_network_method (const char* method, cJSON* msg)
         _ERR_PRINTF("%s: Bad method: %s\n", __FUNCTION__, method);
     }
 
-    return NULL;
+    return res;
 }
 
 static char* on_bind_method (const char* method, cJSON* msg)
