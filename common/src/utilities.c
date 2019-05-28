@@ -1,9 +1,26 @@
+/*
+** This file is a part of mg-demos package.
+**
+** Copyright (C) 2010 ~ 2019 FMSoft (http://www.fmsoft.cn).
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
 /*! ============================================================================
- * @file utilities.c 
- * @Synopsis  
+ * @file utilities.c
+ * @Synopsis
  * @author DongKai
  * @version 1.0
- *  Company: Beijing Feynman Software Technology Co., Ltd.
+ *  Company: Beijing FMSoft Technology Co., Ltd.
  */
 
 #include <math.h>
@@ -94,7 +111,7 @@ HDC forceGetShadowDC (HWND hwnd, BOOL set_foreground)
 {
     if (HWND_INVALID != hwnd) {
         HDC sec_dc = GetSecondaryDC (hwnd);
-        HDC memdc = HDC_INVALID; 
+        HDC memdc = HDC_INVALID;
         BOOL has_secondary_dc = (sec_dc != HDC_SCREEN);
 
         if (!has_secondary_dc) {
@@ -166,34 +183,34 @@ void humanSize (char* buff, int len, float size)
 
 #define XML_ENCODE "UTF-8"
 
-static xmlXPathObjectPtr get_nodeset(xmlDocPtr doc, const xmlChar *szXpath) 
+static xmlXPathObjectPtr get_nodeset(xmlDocPtr doc, const xmlChar *szXpath)
 {
-	xmlXPathContextPtr context;
-	xmlXPathObjectPtr result;
-	
-	context = xmlXPathNewContext(doc);
-	if (context == NULL) 
-	{	
-		printf("context is NULL\n");
-		return NULL; 
-	}
-	
-	result = xmlXPathEvalExpression(szXpath, context);
-	xmlXPathFreeContext(context);
-	if (result == NULL) 
-	{
-		printf("xmlXPathEvalExpression return NULL\n"); 
-		return NULL;  
-	}
-	
-	if (xmlXPathNodeSetIsEmpty(result->nodesetval))
-	{
-		xmlXPathFreeObject(result);
-//		printf("nodeset is empty\n");
-		return NULL;
-	}
-	
-	return result;	
+    xmlXPathContextPtr context;
+    xmlXPathObjectPtr result;
+
+    context = xmlXPathNewContext(doc);
+    if (context == NULL)
+    {
+        printf("context is NULL\n");
+        return NULL;
+    }
+
+    result = xmlXPathEvalExpression(szXpath, context);
+    xmlXPathFreeContext(context);
+    if (result == NULL)
+    {
+        printf("xmlXPathEvalExpression return NULL\n");
+        return NULL;
+    }
+
+    if (xmlXPathNodeSetIsEmpty(result->nodesetval))
+    {
+        xmlXPathFreeObject(result);
+//        printf("nodeset is empty\n");
+        return NULL;
+    }
+
+    return result;
 }
 
 int readXmlConfig (const char* file, const char* path, const char* attr, char* value, size_t size)
@@ -202,14 +219,14 @@ int readXmlConfig (const char* file, const char* path, const char* attr, char* v
         xmlNodePtr curNode = NULL;
         char* key = NULL;
         int ret = -1;
-        xmlChar* szXpath = BAD_CAST(path); 
+        xmlChar* szXpath = BAD_CAST(path);
         xmlXPathObjectPtr app_result;
         xmlDocPtr doc = xmlReadFile(file, XML_ENCODE, XML_PARSE_RECOVER);
-        if (NULL == doc) 
-        { 	
-            fprintf(stderr, "Document not parsed successfully.\n"); 	
-            return -1; 
-        } 
+        if (NULL == doc)
+        {
+            fprintf(stderr, "Document not parsed successfully.\n");
+            return -1;
+        }
         if (NULL != attr) {
             key = (char*)calloc(1, strlen (path) + strlen(attr) + strlen("[@]") + 1);
             if (NULL != key) {

@@ -1,6 +1,23 @@
+/*
+** This file is a part of mg-demos package.
+**
+** Copyright (C) 2010 ~ 2019 FMSoft (http://www.fmsoft.cn).
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
 /*! ============================================================================
- * @file NCSActivity.cc 
- * @Synopsis  
+ * @file NCSActivity.cc
+ * @Synopsis
  * @author DongKai
  * @version 1.0
  *  Company: Beijing FMSoft Technologies Co., Ltd.
@@ -38,7 +55,7 @@ void global_onDestroy(mWidget* self, int message)
     }
 }
 
-NCSActivity::NCSActivity(NCS_MNWND_TEMPLATE* _template, bool autoEscape) : 
+NCSActivity::NCSActivity(NCS_MNWND_TEMPLATE* _template, bool autoEscape) :
     m_tmpl(_template), m_hPack(NULL), m_hIcon(NULL), m_hMenu(NULL), m_autoEscape(autoEscape)
 {
 #if HOOK_ONDESTROY
@@ -54,7 +71,7 @@ NCSActivity::NCSActivity(NCS_MNWND_TEMPLATE* _template, bool autoEscape) :
                     int found = i;
                     // calculate how many message handlers in message map table.
                     while (++i) {
-                        if (0 == _template->handlers[i].message && 
+                        if (0 == _template->handlers[i].message &&
                                 NULL == _template->handlers[i].handler) {
                             break;
                         }
@@ -70,7 +87,7 @@ NCSActivity::NCSActivity(NCS_MNWND_TEMPLATE* _template, bool autoEscape) :
                     m_tmpl = tmpl;
 
                     break;
-                } else if (0 == _template->handlers[i].message && 
+                } else if (0 == _template->handlers[i].message &&
                         NULL == _template->handlers[i].handler) {
                     m_onDestroyOrigin = NULL;
                     tmpl->handlers = (NCS_EVENT_HANDLER*)calloc(1, sizeof(NCS_EVENT_HANDLER) * (i + 2));
@@ -123,7 +140,7 @@ HWND NCSActivity::createHWND()
     mWidget* window = NULL;
     if (m_tmpl) {
         // Pre-set the additional data,
-        // so we can call getActivityFromHWND() to get our Activity's pointer 
+        // so we can call getActivityFromHWND() to get our Activity's pointer
         // in MSG_CREATE message handler.
         m_tmpl->user_data = (DWORD)this;
 
@@ -136,8 +153,8 @@ HWND NCSActivity::createHWND()
         window = (mWidget*)ncsCreateMainWindowIndirectFromID (m_hPack, Uint32 wndId,
                     HWND owner, m_hIcon, m_hMenu,
                     NCS_EVENT_HANDLER_INFO* handlers,
-					NCS_EVENT_CONNECT_INFO *connects,
-					DWORD user_data);
+                    NCS_EVENT_CONNECT_INFO *connects,
+                    DWORD user_data);
 #endif
     }
 

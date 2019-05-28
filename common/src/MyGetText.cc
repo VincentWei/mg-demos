@@ -1,6 +1,23 @@
+/*
+** This file is a part of mg-demos package.
+**
+** Copyright (C) 2010 ~ 2019 FMSoft (http://www.fmsoft.cn).
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
 /*! ============================================================================
- * @file MyGetText.cc 
- * @Synopsis  
+ * @file MyGetText.cc
+ * @Synopsis
  * @author Vincent Wei
  * @version 1.0
  *  Copyright (C) 2018 Beijing Joobot Technologies Inc.
@@ -200,7 +217,7 @@ int MyGetText::loadText (const char* mo_file)
         _ERR_PRINTF ("MyGetText::loadText: wrong magic number: 0x%X (%s)\n", magic_number, mo_file);
         return -2;
     }
-    
+
     /* TODO check revision here */
     _MG_PRINTF ("MyGetText::loadText: revision number: 0x%X (%s)\n", revision, mo_file);
 
@@ -233,7 +250,7 @@ int MyGetText::loadText (const char* mo_file)
     read_mo_data (src, Olist, N * 2, be);
     MGUI_RWseek (src, T, SEEK_SET);
     read_mo_data (src, Tlist, N * 2, be);
-    
+
     for (unsigned i = 0; i < N; i++) {
         Uint32 orig_len = Olist [i * 2];
         char* orig_str = new char[orig_len + 1];

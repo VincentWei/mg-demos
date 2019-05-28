@@ -1,9 +1,26 @@
+/*
+** This file is a part of mg-demos package.
+**
+** Copyright (C) 2010 ~ 2019 FMSoft (http://www.fmsoft.cn).
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
 /*! ============================================================================
- * @file SQLiteDB.cc 
- * @Synopsis  
+ * @file SQLiteDB.cc
+ * @Synopsis
  * @author DongKai
  * @version 1.0
- *  Company: Beijing Feynman Software Technology Co., Ltd.
+ *  Company: Beijing FMSoft Technology Co., Ltd.
  */
 
 #include <stdio.h>
@@ -25,7 +42,7 @@ SQLiteDB::~SQLiteDB ()
     sqlite3_close(m_dbConnection);
     if (m_useCache) {
         while (m_resultCache.size() > 0) {
-            for_each(m_resultCache.begin()->second.begin(), 
+            for_each(m_resultCache.begin()->second.begin(),
                     m_resultCache.begin()->second.end(), DeleteObject());
             m_resultCache.begin()->second.clear();
             m_resultCache.erase(m_resultCache.begin());
@@ -65,10 +82,10 @@ int SQLiteDB::onQuery(void *self, int argc, char **argv, char **azColName)
     return 0;
 }
 
-ContentCursor* SQLiteDB::query(const std::string& table, 
-        const ContentValues::Strings* projection, 
-        const std::string* selection, 
-        const ContentValues::Strings* selectionArgs, 
+ContentCursor* SQLiteDB::query(const std::string& table,
+        const ContentValues::Strings* projection,
+        const std::string* selection,
+        const ContentValues::Strings* selectionArgs,
         const std::string* sortOrder)
 {
     std::stringstream sql_cmd;
@@ -116,14 +133,14 @@ bool SQLiteDB::execSQL(const std::string& sql_cmd, bool is_query)
     }
 
     m_sqlResult.clear();
-    int ret = sqlite3_exec(m_dbConnection, sql_cmd.c_str(), 
+    int ret = sqlite3_exec(m_dbConnection, sql_cmd.c_str(),
             (is_query ? SQLiteDB::onQuery : NULL), this, &err_msg);
 
     if (SQLITE_OK != ret) {
         //fprintf(stderr, "execSQL-> SQL error: %s\n", err_msg);
         sqlite3_free(err_msg);
         return false;
-    } 
+    }
 
     m_lastSQLCmd = sql_cmd;
 
@@ -147,7 +164,7 @@ bool SQLiteDB::queryFromCache(const std::string& sql_cmd)
 void SQLiteDB::cacheQueryResult(const std::string& cmd, const SQLCache& result)
 {
     if (m_resultCache.size() >= s_cacheItemTotal) {
-        for_each(m_resultCache.begin()->second.begin(), 
+        for_each(m_resultCache.begin()->second.begin(),
                 m_resultCache.begin()->second.end(), DeleteObject());
         m_resultCache.begin()->second.clear();
         m_resultCache.erase(m_resultCache.begin());
@@ -156,7 +173,7 @@ void SQLiteDB::cacheQueryResult(const std::string& cmd, const SQLCache& result)
     SQLCacheItem::iterator ret = m_resultCache.find(cmd);
 
     if (ret != m_resultCache.end()) {
-        for_each(ret->second.begin(), 
+        for_each(ret->second.begin(),
                 ret->second.end(), DeleteObject());
         ret->second.clear();
         m_resultCache.erase(ret);
@@ -210,7 +227,7 @@ bool SQLiteDB::insert(const std::string& table, const ContentValues& values)
     return false;
 }
 
-bool SQLiteDB::remove(const std::string& table, const std::string* selection, 
+bool SQLiteDB::remove(const std::string& table, const std::string* selection,
         const ContentValues::Strings* selectionArgs)
 {
     std::stringstream sql_cmd;
@@ -227,8 +244,8 @@ bool SQLiteDB::remove(const std::string& table, const std::string* selection,
     return execSQL(sql_cmd.str());
 }
 
-bool SQLiteDB::update(const std::string& table, const ContentValues& values, 
-        const std::string* selection, 
+bool SQLiteDB::update(const std::string& table, const ContentValues& values,
+        const std::string* selection,
         const ContentValues::Strings* selectionArgs)
 {
     std::stringstream sql_cmd;

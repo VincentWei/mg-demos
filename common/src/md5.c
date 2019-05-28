@@ -1,4 +1,4 @@
-/* 
+/*
  * md5c.c - Implementation of MD5 message-digest algorithm
  *
  * Copyright (C) 2007 FMSoft (http://www.minigui.com)
@@ -36,7 +36,7 @@ typedef struct {
   unsigned char buffer[64];                         /* input buffer */
 } MD5_CTX;
 
-/* 
+/*
  * Constants for MD5Transform routine.
  */
 
@@ -70,7 +70,7 @@ static unsigned char PADDING[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-/* 
+/*
  * F, G, H and I are basic MD5 functions.
  */
 #define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
@@ -78,12 +78,12 @@ static unsigned char PADDING[64] = {
 #define H(x, y, z) ((x) ^ (y) ^ (z))
 #define I(x, y, z) ((y) ^ ((x) | (~z)))
 
-/* 
+/*
  * ROTATE_LEFT rotates x left n bits.
  */
 #define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
-/* 
+/*
  * FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4.
  * Rotation is separate from addition to prevent recomputation.
  */
@@ -108,7 +108,7 @@ static unsigned char PADDING[64] = {
  (a) += (b); \
   }
 
-/* 
+/*
  * MD5 initialization. Begins an MD5 operation, writing a new context.
  */
 void MD5Init (MD5_CTX *context)
@@ -122,12 +122,12 @@ void MD5Init (MD5_CTX *context)
   context->state[3] = 0x10325476;
 }
 
-/* 
+/*
  * MD5 block update operation. Continues an MD5 message-digest
  * operation, processing another message block, and updating the
  * context.
  */
-void MD5Update (MD5_CTX *context, const unsigned char *input, 
+void MD5Update (MD5_CTX *context, const unsigned char *input,
             unsigned int inputLen)
 {
     unsigned int i, index, partLen;
@@ -150,7 +150,7 @@ void MD5Update (MD5_CTX *context, const unsigned char *input,
 
         for (i = partLen; i + 63 < inputLen; i += 64)
             MD5Transform (context->state, &input[i]);
-        
+
         index = 0;
     }
     else
@@ -161,7 +161,7 @@ void MD5Update (MD5_CTX *context, const unsigned char *input,
                 inputLen-i);
 }
 
-/* 
+/*
  * MD5 finalization. Ends an MD5 message-digest operation, writing the
  * the message digest and zeroizing the context.
  */
@@ -188,7 +188,7 @@ static void MD5Final (unsigned char* digest, MD5_CTX *context)
   MD5_memset ((POINTER)context, 0, sizeof (*context));
 }
 
-/* 
+/*
  * MD5 basic transformation. Transforms state based on block.
  */
 static void MD5Transform (UINT4 state[4], const unsigned char block[64])
@@ -278,7 +278,7 @@ static void MD5Transform (UINT4 state[4], const unsigned char block[64])
     MD5_memset ((POINTER)x, 0, sizeof (x));
 }
 
-/* 
+/*
  * Encodes input (UINT4) into output (unsigned char). Assumes len is
  * a multiple of 4.
  */
@@ -294,7 +294,7 @@ static void Encode (unsigned char *output, UINT4 *input, unsigned int len)
   }
 }
 
-/* 
+/*
  * Decodes input (unsigned char) into output (UINT4). Assumes len is
  * a multiple of 4.
  */
@@ -311,10 +311,10 @@ void mymd5 (const unsigned char *string, unsigned char* digest)
 {
     MD5_CTX context;
     unsigned int len = strlen ((const char*)string);
-    
+
     MD5Init (&context);
     MD5Update (&context, string, len);
-    MD5Final (digest, &context);    
+    MD5Final (digest, &context);
     return;
 }
 

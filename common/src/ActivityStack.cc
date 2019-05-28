@@ -1,9 +1,26 @@
+/*
+** This file is a part of mg-demos package.
+**
+** Copyright (C) 2010 ~ 2019 FMSoft (http://www.fmsoft.cn).
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
 /*! ============================================================================
- * @file ActivityStack.cc 
- * @Synopsis  
+ * @file ActivityStack.cc
+ * @Synopsis
  * @author DongKai
  * @version 1.0
- *  Company: Beijing Feynman Software Technology Co., Ltd.
+ *  Company: Beijing FMSoft Technology Co., Ltd.
  */
 
 #include <string>
@@ -49,7 +66,7 @@ const char* ActivityStack::currentAppName() const
 
 }
 
-// Create a new activity and bring it to the top of the stack, 
+// Create a new activity and bring it to the top of the stack,
 // using appName to specify which Activity will be created,
 // using intentPtr to specify your intend (optionally).
 bool ActivityStack::push(const char* appName, Intent* intentPtr)
@@ -71,7 +88,7 @@ bool ActivityStack::push(const char* appName, Intent* intentPtr)
     return ret;
 }
 
-// Remove the top activity from the stack, and send MSG_CLOSE message to 
+// Remove the top activity from the stack, and send MSG_CLOSE message to
 // the window of the activity, instead of destroying it directly.
 bool ActivityStack::pop (DWORD res)
 {
@@ -93,7 +110,7 @@ bool ActivityStack::back()
         assert (0);
         return false;
     }
-    
+
     if (top()->onBack() == 0) {
         return pop();
     }
@@ -117,7 +134,7 @@ bool ActivityStack::home()
 void ActivityStack::switchTo(const char* appName, Intent* intentPtr, DWORD res)
 {
     Activity* next = searchActivityByName(appName);
-    
+
     if (NULL == next) {
         push(appName, intentPtr);
     }
@@ -203,7 +220,7 @@ bool ActivityStack::innerPop (DWORD res)
     return true;
 }
 
-// Do the same thing as pop(), but supply a parameter "which" to specify 
+// Do the same thing as pop(), but supply a parameter "which" to specify
 // which activity you want to show up, and all activities above it will be poped.
 // Notice that, if you call this function with parameter NULL, the stack will be cleared.
 // return how much activities has been poped up
@@ -329,7 +346,7 @@ void ActivityStack::_doSwitchEffect(Activity* prev, Activity* next, BOOL switchT
                 if (next->m_pushIndex > prev->m_pushIndex)
                     direction = MGEFF_DIRECTION_RIGHT2LEFT;
             }
-            
+
             mGEffEffectorSetProperty (
                 effector, (EffAnimProperty)MGEFF_PROPERTY_DIRECTION, direction);
         }
