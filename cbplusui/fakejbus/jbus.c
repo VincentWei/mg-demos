@@ -3,9 +3,11 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 #include <minigui/common.h>
 
+#include "md5.h"
 #include "cJSON.h"
 #include "jbus.h"
 
@@ -70,7 +72,6 @@ typedef struct _DeviceState {
     char ftpPassword[LEN_FTP_PASSWORD + 1];
 
     int lteState;
-    int lteSignal;
 
     int  wifiState;
     char wifiSSID[LEN_WIFI_SSID + 1];
@@ -78,13 +79,20 @@ typedef struct _DeviceState {
     int  wifiAp;
     char wifiApSSID[LEN_WIFI_SSID + 1];
     char wifiApPass[LEN_WIFI_PASSWORD + 1];
-    int  wifiSignal;
+
+    int firmwareDownloading;
+    int firmwareDownloadProgress;
+
+    int firmwareUpgrading;
+    int firmwareUpgradeProgress;
 } DeviceState;
 
 static DeviceState device_state;
 
 static void init_device_state(void)
 {
+    memset(&device_state, 0, sizeof(DeviceState));
+
     strcpy(device_state.timeZone, "Asia/Shanghai");
     device_state.transferMode = SYS_TRANSFER_PROTOCOL_JOOPIC;
 
@@ -101,10 +109,8 @@ static void init_device_state(void)
     device_state.ftpUser[0] = 0;
     device_state.ftpPassword[0] = 0;
 
-    device_state.lteState = NETWORK_STATE_CONNECTED;
-    device_state.lteSignal = 75;
+    device_state.lteState = NETWORK_STATE_CONNECTING;
     device_state.wifiState = NETWORK_STATE_DISCONNECTED;
-    device_state.wifiSignal = 0;
     device_state.wifiAp = 0;
 }
 
@@ -266,6 +272,11 @@ static char* on_config_method (const char* method, cJSON* msg)
                         "\"value\": \"CBPlus\""
                     "},"
                     "{"
+                        "\"module\": \"device\","
+                        "\"key\": \"name\","
+                        "\"value\": \"CBPlus800123\""
+                    "},"
+                    "{"
                         "\"module\": \"os\","
                         "\"key\": \"verCode\","
                         "\"value\": \"100\""
@@ -273,7 +284,7 @@ static char* on_config_method (const char* method, cJSON* msg)
                     "{"
                         "\"module\": \"os\","
                         "\"key\": \"verName\","
-                        "\"value\": \"2.0.0\""
+                        "\"value\": \"1.0.0\""
                     "},"
                     "{"
                         "\"module\": \"os\","
@@ -422,7 +433,7 @@ static char* on_config_method (const char* method, cJSON* msg)
                         "{"
                             "\"module\": \"os\","
                             "\"key\": \"verName\","
-                            "\"value\": \"2.0.0\""
+                            "\"value\": \"1.0.0\""
                         "},"
                         "{"
                             "\"module\": \"os\","
@@ -660,6 +671,9 @@ static char* on_config_method (const char* method, cJSON* msg)
             "\"retCode\": 0"
         "}";
 
+        sleep(3);
+        exit(100);
+
         res = strdup(my_res);
     }
     else if (strcmp(method, "setFtpConfig") == 0) {
@@ -694,17 +708,87 @@ error:
 
 static char* on_firmware_method (const char* method, cJSON* msg)
 {
+    char* res = NULL;
+
     if (strcmp(method, "check") == 0) {
+        static const char* res_no_update = "{"
+            "\"retCode\": 0,"
+            "\"data\": {"
+                "\"update\": 0"
+            "}"
+        "}";
+        static const char* res_has_update = "{"
+            "\"retCode\": 0,"
+            "\"data\": {"
+                "\"update\": 1,"
+                "\"verCode\": 200,"
+                "\"verName\": \"2.0.0\","
+                "\"verDesc\": \"This is a fake new firmware.\","
+                "\"size\": 20000000,"
+                "\"url\": \"https://ftp.joobot.com/cpblus-2.0.0.tar\","
+                "\"md5\": \"1234567890ABCDEF1234567890ABCDEF\""
+            "}"
+        "}";
+
+        sleep(2);
+        if (time(NULL) % 2) {
+            res = strdup(res_no_update);
+        }
+        else {
+            res = strdup(res_has_update);
+        }
     }
     else if (strcmp(method, "download") == 0) {
+        static const char* my_res = "{"
+            "\"retCode\": 0,"
+        "}";
+
+        device_state.firmwareDownloading = 1;
+        device_state.firmwareDownloadProgress = 0;
+        res = strdup(my_res);
     }
     else if (strcmp(method, "upgrade") == 0) {
+        static const char* my_res = "{"
+            "\"retCode\": 0,"
+        "}";
+
+        device_state.firmwareUpgrading = 1;
+        device_state.firmwareUpgradeProgress = 0;
+        res = strdup(my_res);
     }
     else {
         _ERR_PRINTF("%s: Bad method: %s\n", __FUNCTION__, method);
     }
 
-    return NULL;
+    return res;
+}
+
+#define TS_CONN_WIFI_RES_CONNECTED  0
+#define TS_CONN_WIFI_RES_BADPASSWD  40012
+#define TS_CONN_WIFI_RES_NOTEXISTS  40023
+#define TS_CONN_WIFI_RES_UNKNOWNERR -4
+
+static int connet_to_wifi_hotspot(const char* ssid,
+        const char* password)
+{
+    device_state.wifiState = NETWORK_STATE_DISCONNECTED;
+
+    sleep(2);
+
+    switch (time(NULL) % 7) {
+    case 0:
+        return TS_CONN_WIFI_RES_UNKNOWNERR;
+    case 1:
+        return TS_CONN_WIFI_RES_BADPASSWD;
+    case 2:
+        return TS_CONN_WIFI_RES_NOTEXISTS;
+    default:
+        break;
+    }
+
+    device_state.wifiState = NETWORK_STATE_CONNECTING;
+    strcpy(device_state.wifiSSID, ssid);
+    return TS_CONN_WIFI_RES_CONNECTED;
 }
 
 static char* on_network_method (const char* method, cJSON* msg)
@@ -856,6 +940,8 @@ static char* on_network_method (const char* method, cJSON* msg)
             "}"
         "}";
 
+        sleep(3);
+
         res = calloc(sizeof(char), strlen(my_result) + sizeof(DeviceState));
         if (res) {
             if (device_state.wifiState == NETWORK_STATE_CONNECTED) {
@@ -867,15 +953,105 @@ static char* on_network_method (const char* method, cJSON* msg)
             else {
                 sprintf(res, my_result, "null");
             }
-
-            sleep(3);
         }
     }
     else if (strcmp(method, "connectWiFi") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": %d"
+        "}";
+
+        int ret_code = RC_BAD_PARAM;
+        cJSON* ssid = cJSON_GetObjectItem (msg, "ssid");
+        cJSON* password = cJSON_GetObjectItem (msg, "password");
+
+        if (ssid && password) {
+            ret_code = connet_to_wifi_hotspot(ssid->valuestring,
+                        password->valuestring);
+        }
+
+        res = calloc(sizeof(char), strlen(my_state) + 64);
+        if (res) {
+            sprintf(res, my_state, ret_code);
+        }
+    }
+    else if (strcmp(method, "enableLte") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": 0"
+        "}";
+
+        sleep(1);
+        device_state.lteState = NETWORK_STATE_CONNECTING;
+        res = strdup(my_state);
+    }
+    else if (strcmp(method, "disableLte") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": 0"
+        "}";
+
+        sleep(1);
+        device_state.lteState = NETWORK_STATE_DISABLED;
+        res = strdup(my_state);
+    }
+    else if (strcmp(method, "enableWiFi") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": 0"
+        "}";
+
+        sleep(1);
+        device_state.wifiState = NETWORK_STATE_CONNECTING;
+        res = strdup(my_state);
+    }
+    else if (strcmp(method, "disableWiFi") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": 0"
+        "}";
+
+        sleep(1);
+        device_state.wifiState = NETWORK_STATE_DISABLED;
+        res = strdup(my_state);
     }
     else if (strcmp(method, "enableAp") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": 0,"
+            "\"data\": {"
+                "\"ssid\": \"%s\","
+                "\"password\": \"%s\""
+            "}"
+        "}";
+
+        int i;
+        time_t tm = time(NULL);
+        char buff[64];
+        unsigned char md5[16];
+
+        sleep(2);
+
+        strcpy(device_state.wifiApSSID, "CBPlus800123");
+
+        strcpy(buff, device_state.wifiApSSID);
+        strcat(buff, ctime(&tm));
+        mymd5((const unsigned char*)device_state.wifiApSSID, md5);
+        for (i = 0; i < 4; i++) {
+            sprintf(device_state.wifiApPass, "%02X%02x%02x%02X",
+                md5[0], md5[1], md5[2], md5[3]);
+        }
+        device_state.wifiAp = 1;
+
+        res = calloc(sizeof(char), strlen(my_state) + sizeof(DeviceState));
+        if (res) {
+            sprintf(res, my_state,
+                    device_state.wifiApSSID, device_state.wifiApPass);
+        }
     }
     else if (strcmp(method, "disableAp") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": 0"
+        "}";
+
+        device_state.wifiAp = 0;
+        sleep(1);
+
+        res = strdup(my_state);
     }
     else {
         _ERR_PRINTF("%s: Bad method: %s\n", __FUNCTION__, method);
@@ -886,17 +1062,58 @@ static char* on_network_method (const char* method, cJSON* msg)
 
 static char* on_bind_method (const char* method, cJSON* msg)
 {
+    char* res = NULL;
+
     if (strcmp(method, "getBindState") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": 0,"
+            "\"data\": {"
+                "\"bind\": 1,"
+                "\"userId\": \"1234567890\""
+            "}"
+        "}";
+
+        res = strdup(my_state);
     }
     else if (strcmp(method, "getBindCode") == 0) {
+        static const char* my_state = "{"
+            "\"retCode\": 0,"
+            "\"data\": {"
+                "\"code\": \"1234567890987654321\","
+                "\"filepath\": \"res/images/test-qrcode.png\""
+            "}"
+        "}";
+
+        sleep(3);
+        res = strdup(my_state);
     }
     else if (strcmp(method, "getBindCodeState") == 0) {
+        static const char* notok = "{"
+            "\"retCode\": 1"
+        "}";
+
+        static const char* paired = "{"
+            "\"retCode\": 0,"
+            "\"data\": {"
+                "\"userId\": \"0987654321\","
+                "\"nickname\": \"Trump!\""
+            "}"
+        "}";
+
+        usleep(500000);
+
+        if ((time(NULL) % 10) == 0) {
+            res = strdup(paired);
+        }
+        else {
+            res = strdup(notok);
+        }
     }
     else {
         _ERR_PRINTF("%s: Bad method: %s\n", __FUNCTION__, method);
     }
 
-    return NULL;
+    return res;
 }
 
 static char* on_am_method (const char* method, cJSON* msg)
@@ -1041,22 +1258,93 @@ static char* event_generator_battery_changed(void)
 
 static char* event_generator_wifi_state_changed(void)
 {
-    return NULL;
+    static const char* format_ok = "{\"state\":%d, \"ssid\": \"%s\"}";
+    static const char* format_bad = "{\"state\":%d, \"ssid\": null}";
+
+    char* message = calloc(sizeof(char), strlen(format_ok) + 256);
+
+    switch (device_state.wifiState) {
+    case NETWORK_STATE_CONNECTING:
+        if (device_state.wifiSSID[0]) {
+            device_state.wifiState = NETWORK_STATE_CONNECTED;
+            sprintf(message, format_ok,
+                    device_state.wifiState, device_state.wifiSSID);
+            break;
+        }
+
+    case NETWORK_STATE_CONNECTED:
+        free (message);
+        return NULL;
+
+    case NETWORK_STATE_DISCONNECTING:
+        device_state.wifiState = NETWORK_STATE_DISCONNECTED;
+
+    default:
+        sprintf(message, format_bad, device_state.wifiState);
+        break;
+    }
+
+    return message;
 }
+
+#define MIN_RSSI -100
+#define MAX_RSSI -55
 
 static char* event_generator_wifi_rssi_changed(void)
 {
-    return NULL;
+    char* message = NULL;
+    static const char* format = "{\"rssi\":%d}";
+
+    if (device_state.wifiState != NETWORK_STATE_CONNECTED)
+        goto error;
+
+    message = calloc(sizeof(char), strlen(format) + 64);
+    sprintf(message, format, MIN_RSSI + (time(NULL) % 45));
+
+error:
+    return message;
 }
 
-static char* event_generator_cellular_data_state_changed(void)
+static char* event_generator_cellular_state_changed(void)
 {
-    return NULL;
+    static const char* format_ok = "{\"state\":%d}";
+
+    char* message = calloc(sizeof(char), strlen(format_ok) + 64);
+
+    switch (device_state.lteState) {
+    case NETWORK_STATE_CONNECTING:
+        device_state.lteState = NETWORK_STATE_CONNECTED;
+        break;
+
+    case NETWORK_STATE_DISCONNECTING:
+        device_state.lteState = NETWORK_STATE_DISCONNECTED;
+        break;
+
+    case NETWORK_STATE_CONNECTED:
+        free (message);
+        return NULL;
+
+    default:
+        break;
+    }
+
+    sprintf(message, format_ok, device_state.lteState);
+    return message;
 }
 
 static char* event_generator_cellular_signal_changed(void)
 {
-    return NULL;
+    char* message = NULL;
+    static const char* format = "{\"level\":%d}";
+
+    if (device_state.lteState != NETWORK_STATE_CONNECTED)
+        goto error;
+
+    message = calloc(sizeof(char), strlen(format) + 64);
+    sprintf(message, format, time(NULL) % 100);
+
+error:
+    return message;
 }
 
 static char* event_generator_camera_connected(void)
@@ -1086,12 +1374,51 @@ static char* event_generator_order_state_changed(void)
 
 static char* event_generator_firmware_download(void)
 {
-    return NULL;
+    static const char* format = "{\"progress\":%d, \"state\": %d}";
+    char* message;
+
+    if (device_state.firmwareDownloading == 0) {
+        return NULL;
+    }
+
+    device_state.firmwareDownloadProgress += 10;
+    message = calloc (sizeof(char), 256);
+    if (message) {
+        if (device_state.firmwareDownloadProgress < 100)
+            sprintf(message, format, device_state.firmwareDownloadProgress, 1);
+        else {
+            sprintf(message, format, 100, 0);
+            device_state.firmwareDownloading = 0;
+            device_state.firmwareDownloadProgress = 0;
+        }
+    }
+
+    return message;
 }
 
 static char* event_generator_firmware_upgrade(void)
 {
-    return NULL;
+    static const char* format = "{\"progress\":%d, \"state\": %d}";
+    char* message;
+
+    if (device_state.firmwareUpgrading == 0) {
+        return NULL;
+    }
+
+    device_state.firmwareUpgradeProgress += 20;
+    message = calloc (sizeof(char), 256);
+    if (message) {
+        if (device_state.firmwareUpgradeProgress < 100)
+            sprintf(message, format, device_state.firmwareUpgradeProgress, 1);
+        else {
+            sprintf(message, format, 100, 0);
+            device_state.firmwareUpgrading = 0;
+            device_state.firmwareUpgradeProgress = 0;
+            exit(1);
+        }
+    }
+
+    return message;
 }
 
 int jbus_connect(void)
@@ -1102,7 +1429,7 @@ int jbus_connect(void)
     handlers[1].generator = event_generator_battery_changed;
     handlers[2].generator = event_generator_wifi_state_changed;
     handlers[3].generator = event_generator_wifi_rssi_changed;
-    handlers[4].generator = event_generator_cellular_data_state_changed;
+    handlers[4].generator = event_generator_cellular_state_changed;
     handlers[5].generator = event_generator_cellular_signal_changed;
     handlers[6].generator = event_generator_camera_connected;
     handlers[7].generator = event_generator_camera_disconnected;
@@ -1117,12 +1444,15 @@ int jbus_connect(void)
 
 void jbus_run(void)
 {
+    struct timeval tv;
+
     while (1) {
         int eid;
 
-        usleep (500000);
+        usleep (50000);
 
-        eid = time(NULL) % TABLESIZE(events);
+        gettimeofday(&tv, NULL);
+        eid = tv.tv_usec % TABLESIZE(events);
         if (handlers[eid].handler) {
             char* message = handlers[eid].generator();
             if (message) {

@@ -75,24 +75,24 @@ void* AsyncTaskPairCheck::execute_task (pthread_t thread_id, int task_id, DWORD 
     }
 
     /* convert to C structure here */
-	cJSON* root = cJSON_Parse (res);
+    cJSON* root = cJSON_Parse (res);
     jbus_free (res);
 
     if (root == NULL) {
         goto error;
     }
     else {
-	    cJSON* retCode = cJSON_GetObjectItem (root, "retCode");
+        cJSON* retCode = cJSON_GetObjectItem (root, "retCode");
         if (retCode == NULL || retCode->valueint != 0) {
             goto error;
         }
 
-	    cJSON* data = cJSON_GetObjectItem (root, "data");
+        cJSON* data = cJSON_GetObjectItem (root, "data");
         if (data == NULL) {
             goto error;
         }
 
-	    cJSON* bindState = cJSON_GetObjectItem (data, "bind");
+        cJSON* bindState = cJSON_GetObjectItem (data, "bind");
         if (bindState == NULL) {
             goto error;
         }
@@ -102,7 +102,7 @@ void* AsyncTaskPairCheck::execute_task (pthread_t thread_id, int task_id, DWORD 
             goto error;
         }
 
-	    cJSON* userId = cJSON_GetObjectItem (data, "userId");
+        cJSON* userId = cJSON_GetObjectItem (data, "userId");
         if (userId == NULL) {
             goto error;
         }
@@ -139,30 +139,30 @@ void* AsyncTaskPairGetCode::execute_task (pthread_t thread_id, int task_id, DWOR
     }
 
     /* convert to C structure here */
-	cJSON* root = cJSON_Parse (res);
+    cJSON* root = cJSON_Parse (res);
     jbus_free (res);
 
     if (root == NULL) {
         goto error;
     }
     else {
-	    cJSON* retCode = cJSON_GetObjectItem (root, "retCode");
+        cJSON* retCode = cJSON_GetObjectItem (root, "retCode");
         if (retCode == NULL || retCode->valueint != 0) {
             goto error;
         }
 
-	    cJSON* data = cJSON_GetObjectItem (root, "data");
+        cJSON* data = cJSON_GetObjectItem (root, "data");
         if (data == NULL) {
             goto error;
         }
 
-	    cJSON* bindCode = cJSON_GetObjectItem (data, "code");
+        cJSON* bindCode = cJSON_GetObjectItem (data, "code");
         if (bindCode == NULL) {
             goto error;
         }
         info->code = strdup (bindCode->valuestring);
 
-	    cJSON* filePath = cJSON_GetObjectItem (data, "filepath");
+        cJSON* filePath = cJSON_GetObjectItem (data, "filepath");
         if (filePath == NULL) {
             goto error;
         }

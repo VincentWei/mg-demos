@@ -69,24 +69,24 @@ void* AsyncTaskCheckFirmware::execute_task (pthread_t thread_id, int task_id, DW
     }
 
     /* convert to C structure here */
-	cJSON* root = cJSON_Parse (res);
+    cJSON* root = cJSON_Parse (res);
     jbus_free (res);
 
     if (root == NULL) {
         goto error;
     }
     else {
-	    cJSON* retCode = cJSON_GetObjectItem (root, "retCode");
+        cJSON* retCode = cJSON_GetObjectItem (root, "retCode");
         if (retCode == NULL || retCode->valueint != 0) {
             goto error;
         }
 
-	    cJSON* data = cJSON_GetObjectItem (root, "data");
+        cJSON* data = cJSON_GetObjectItem (root, "data");
         if (data == NULL) {
             goto error;
         }
 
-	    cJSON* json_update = cJSON_GetObjectItem (data, "update");
+        cJSON* json_update = cJSON_GetObjectItem (data, "update");
         if (json_update == NULL || json_update->type != cJSON_Number) {
             goto error;
         }
@@ -96,40 +96,40 @@ void* AsyncTaskCheckFirmware::execute_task (pthread_t thread_id, int task_id, DW
             goto error;
         }
 
-	    cJSON* json_verCode = cJSON_GetObjectItem (data, "verCode");
+        cJSON* json_verCode = cJSON_GetObjectItem (data, "verCode");
         if (json_verCode == NULL || json_verCode->type != cJSON_Number) {
             goto error;
         }
         m_info.verCode = json_verCode->valueint;
 
-	    cJSON* json_size = cJSON_GetObjectItem (data, "size");
+        cJSON* json_size = cJSON_GetObjectItem (data, "size");
         if (json_size == NULL || json_size->type != cJSON_Number) {
             goto error;
         }
         m_info.size = json_size->valueint;
 
-	    cJSON* json_url = cJSON_GetObjectItem (data, "url");
+        cJSON* json_url = cJSON_GetObjectItem (data, "url");
         if (json_url == NULL || json_url->type != cJSON_String) {
             goto error;
         }
 
         m_info.url = strdup (json_url->valuestring);
 
-	    cJSON* json_verName = cJSON_GetObjectItem (data, "verName");
+        cJSON* json_verName = cJSON_GetObjectItem (data, "verName");
         if (json_verName == NULL || json_verName->type != cJSON_String) {
             goto error;
         }
 
         m_info.verName = strdup (json_verName->valuestring);
 
-	    cJSON* json_verDesc = cJSON_GetObjectItem (data, "verDesc");
+        cJSON* json_verDesc = cJSON_GetObjectItem (data, "verDesc");
         if (json_verDesc == NULL || json_verDesc->type != cJSON_String) {
             goto error;
         }
 
         m_info.verDesc = strdup (json_verDesc->valuestring);
 
-	    cJSON* json_md5 = cJSON_GetObjectItem (data, "md5");
+        cJSON* json_md5 = cJSON_GetObjectItem (data, "md5");
         if (json_md5 == NULL || json_md5->type != cJSON_String) {
             goto error;
         }
@@ -166,14 +166,14 @@ void* AsyncTaskDownloadFirmware::execute_task (pthread_t thread_id, int task_id,
     }
 
     /* convert to C structure here */
-	cJSON* root = cJSON_Parse (res);
+    cJSON* root = cJSON_Parse (res);
     jbus_free (res);
 
     if (root == NULL) {
         goto error;
     }
     else {
-	    cJSON* retCode = cJSON_GetObjectItem (root, "retCode");
+        cJSON* retCode = cJSON_GetObjectItem (root, "retCode");
         if (retCode == NULL || retCode->valueint != 0) {
             goto error;
         }
@@ -203,14 +203,14 @@ void* AsyncTaskUpgradeFirmware::execute_task (pthread_t thread_id, int task_id, 
     }
 
     /* convert to C structure here */
-	cJSON* root = cJSON_Parse (res);
+    cJSON* root = cJSON_Parse (res);
     jbus_free (res);
 
     if (root == NULL) {
         goto error;
     }
     else {
-	    cJSON* retCode = cJSON_GetObjectItem (root, "retCode");
+        cJSON* retCode = cJSON_GetObjectItem (root, "retCode");
         if (retCode == NULL || retCode->valueint != 0) {
             goto error;
         }
