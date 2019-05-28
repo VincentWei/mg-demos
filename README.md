@@ -45,11 +45,7 @@ mechanism to interact with the system services.
 ## Building
 
 We strongly recommend you to build this demo by using the fetching and building
-scripts of build-minigui-3.2 or build-minigui-4.0:
-
-https://github.com/VincenWei/build-minigui-3.2
-
-or
+scripts of build-minigui-4.0:
 
 https://github.com/VincenWei/build-minigui-4.0
 
