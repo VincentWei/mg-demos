@@ -1,6 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS=src
-DIST_SUBDIRS=include
+SUBDIRS = src
 
-EXTRA_DIST = README.md
+EXTRA_DIST = README.md include

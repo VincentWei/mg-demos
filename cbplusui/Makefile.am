@@ -18,7 +18,7 @@ cbplusui_SOURCES = \
 
 cbplusui_LDADD = $(APP_LIBS)
 
-EXTRA_DIST = README.md
+EXTRA_DIST = README.md MiniGUI.cfg mgncs.cfg mgncs4touch.cfg cbplusui.cfg
 
 #install-data-local:
 #	$(INSTALL_DATA) MiniGUI.cfg $(prefix)/etc/MiniGUI.cfg
