@@ -1,11 +1,26 @@
+/*
+** This file is a part of mg-demos package.
+**
+** Copyright (C) 2019 FMSoft (http://www.fmsoft.cn).
+** Copyright (C) 2018 Beijing Joobot Technologies Inc.
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
 /*!============================================================================
- * @file ScreenLock.c 
+ * @file ScreenLock.c
  * @Synopsis Soft keyboard
  * @author Vincent Wei
  * @version 1.0
- *
- * Copyright (C) 2018 Beijing Joobot Technologies Inc.
- * All rights reserved.
  */
 
 #ifndef _GNU_SOURCE
@@ -82,7 +97,7 @@ typedef struct _SL_INFO {
     const char* prompt;
 
     DEVFONT *bmp_devfont;
-    LOGFONT *bmp_logfont; 
+    LOGFONT *bmp_logfont;
 } SL_INFO;
 
 typedef struct _KEY {
@@ -358,7 +373,7 @@ static BOOL init_battery_widgets (HWND hwnd)
     else {
         _ERR_PRINTF ("screenLock: Failed to create battery level widget\n");
     }
-    
+
     /* charging icon */
     NCS_PROP_ENTRY props_charging_icon [] = {
         {NCSP_IMAGE_IMAGE, (DWORD)GetResource (Str2Key (RES_CHARGING))},
@@ -825,7 +840,7 @@ static NCS_WND_TEMPLATE _sl_ctrl_templ[] =
 
 //define the main window template
 static NCS_MNWND_TEMPLATE _sl_templ = {
-    NCSCTRL_DIALOGBOX, 
+    NCSCTRL_DIALOGBOX,
     1,
     0, 0, SCREEN_W, SCREEN_H,
     WS_NONE, WS_EX_TOPMOST | WS_EX_AUTOSECONDARYDC,
@@ -858,7 +873,7 @@ void screenLock (HWND hosting, BOOL reset)
     else
         strncpy (sl_info.curr_enc_passwd, passwd, LEN_ENC_PASSWD);
 
-    sl_info.bmp_devfont = CreateBMPDevFont ("bmp-joopic-rrncnn-38-60-ISO8859-1", 
+    sl_info.bmp_devfont = CreateBMPDevFont ("bmp-joopic-rrncnn-38-60-ISO8859-1",
                 (BITMAP*)GetResource (Str2Key (RES_BMPFONT_DIGITS)), "0", 10, 38);
     AddGlyphsToBMPFont (sl_info.bmp_devfont,
                 (BITMAP*)GetResource (Str2Key (RES_BMPFONT_COLON)), ":", 1, 18);

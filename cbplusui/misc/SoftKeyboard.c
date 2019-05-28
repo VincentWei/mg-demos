@@ -1,11 +1,26 @@
+/*
+** This file is a part of mg-demos package.
+**
+** Copyright (C) 2019 FMSoft (http://www.fmsoft.cn).
+** Copyright (C) 2018 Beijing Joobot Technologies Inc.
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
 /*!============================================================================
- * @file SoftKeyboard.c 
+ * @file SoftKeyboard.c
  * @Synopsis Soft keyboard
  * @author Vincent Wei
  * @version 1.0
- *
- * Copyright (C) 2018 Beijing Joobot Technologies Inc.
- * All rights reserved.
  */
 
 #ifndef _GNU_SOURCE
@@ -196,7 +211,7 @@ static BOOL my_onCommand (mWidget* self, int id, int nc, HWND hCtrl)
         else if (id == IDC_CAPSLOCK) {
             if (sk_info->caps_lock) {
                 mStatic *caps_lock = (mStatic*)ncsObjFromHandle (hCtrl);
-                _c(caps_lock)->setProperty (caps_lock, NCSP_IMAGE_IMAGE, 
+                _c(caps_lock)->setProperty (caps_lock, NCSP_IMAGE_IMAGE,
                     (DWORD)GetResource (Str2Key ("images/soft-keyboard/caps-off.png")));
 
                 toggle_candidates (hwnd_mainwin, FALSE);
@@ -205,7 +220,7 @@ static BOOL my_onCommand (mWidget* self, int id, int nc, HWND hCtrl)
             }
             else {
                 mStatic *caps_lock = (mStatic*)ncsObjFromHandle (hCtrl);
-                _c(caps_lock)->setProperty (caps_lock, NCSP_IMAGE_IMAGE, 
+                _c(caps_lock)->setProperty (caps_lock, NCSP_IMAGE_IMAGE,
                     (DWORD)GetResource (Str2Key ("images/soft-keyboard/caps-on.png")));
 
                 toggle_candidates (hwnd_mainwin, TRUE);
@@ -373,11 +388,11 @@ static BOOL init_others (mComponent* self)
     int id;
 
     mWidget* ctrl_ok = (mWidget*)(_c(self)->getChild (self, IDOK));
-    _c(ctrl_ok)->setProperty (ctrl_ok, NCSP_IMAGE_IMAGE, 
+    _c(ctrl_ok)->setProperty (ctrl_ok, NCSP_IMAGE_IMAGE,
             (DWORD)GetResource (Str2Key ("images/soft-keyboard/done.png")));
 
     mWidget* ctrl_delete = (mWidget*)(_c(self)->getChild (self, IDC_DELETE));
-    _c(ctrl_delete)->setProperty (ctrl_delete, NCSP_IMAGE_IMAGE, 
+    _c(ctrl_delete)->setProperty (ctrl_delete, NCSP_IMAGE_IMAGE,
             (DWORD)GetResource (Str2Key ("images/soft-keyboard/delete.png")));
 
     /* set the background color of candidate control to #aaaaaa */
@@ -593,7 +608,7 @@ static NCS_WND_TEMPLATE _sk_ctrl_templ[] =
 
 //define the main window template
 static NCS_MNWND_TEMPLATE _sk_templ = {
-    NCSCTRL_DIALOGBOX, 
+    NCSCTRL_DIALOGBOX,
     1,
     0, 0, SCREEN_W, SCREEN_H,
     WS_NONE, WS_EX_AUTOSECONDARYDC,

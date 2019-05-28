@@ -1,11 +1,27 @@
+/*
+** This file is a part of mg-demos package.
+**
+** Copyright (C) 2019 FMSoft (http://www.fmsoft.cn).
+** Copyright (C) 2018 Beijing Joobot Technologies Co., Ltd.
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
 /*!============================================================================
- * @file MUCActivity.cc 
+ * @file MUCActivity.cc
  * @Synopsis The activity for Auto-Upload-Cloud.
  * @author Vincent Wei
  * @version 1.0
  * @date 06/06/2018
- *
- *  Copyright (C) 2018 Beijing Joobot Technogolies Inc.
  */
 
 #include <math.h>
@@ -162,7 +178,7 @@ static BOOL mypage_onCommand (mWidget* self, int id, int nc, HWND hCtrl)
             MISCSERVICE->startMUC (hmainwin, act->m_duration, act->m_filter);
             _c(propsheet)->setProperty (propsheet, NCSP_PRPSHT_ACTIVEPAGEIDX, PAGE_UPLOAD_STATE);
             break;
- 
+
         case IDC_STOP:
             MISCSERVICE->stopMUC (hmainwin);
             _c(propsheet)->setProperty (propsheet, NCSP_PRPSHT_ACTIVEPAGEIDX, PAGE_SET_AND_START);
@@ -315,7 +331,7 @@ static NCS_WND_TEMPLATE _upload_state_ctrls [] = {
         y: TEXT_SUBJECT_H + TEXT_NUMBER_H + TEXT_SIZE_H,
         w: ACTIVITY_W - ACTIVITY_CONTENT_MARGIN_H * 2,
         h: TEXT_SIZE_H,
-        style: WS_NONE, // WS_VISIBLE,      VincentWei: hide this widget temporarily. 
+        style: WS_NONE, // WS_VISIBLE,      VincentWei: hide this widget temporarily.
         ex_style: WS_EX_NONE,
         caption: "",
     },
@@ -815,7 +831,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
 };
 
 static NCS_MNWND_TEMPLATE mymain_templ = {
-    NCSCTRL_DIALOGBOX, 
+    NCSCTRL_DIALOGBOX,
     1,
     ACTIVITY_X, ACTIVITY_Y, ACTIVITY_W, ACTIVITY_H,
     WS_NONE, WS_EX_NONE,
@@ -831,14 +847,14 @@ static NCS_MNWND_TEMPLATE mymain_templ = {
 };
 
 int MUCActivity::onStart ()
-{ 
+{
     MISCSERVICE->startFunc (GET_GLOBAL_HOSTING, APP_MANUAL_UPLOAD_CLOUD);
     return 0;
 }
 
 int MUCActivity::onCancel ()
 {
-    if (messageScreen (m_hwnd, _("Please Confirm"), _("Exit the current work mode?"), 
+    if (messageScreen (m_hwnd, _("Please Confirm"), _("Exit the current work mode?"),
             MB_OKCANCEL | MS_AUTOCANCEL) == IDCANCEL)
         return 1;
 
@@ -860,7 +876,7 @@ int MUCActivity::onStop ()
 }
 
 MUCActivity::MUCActivity () : NCSActivity (&mymain_templ, true)
-{ 
+{
     m_duration = 3600;
     m_filter = PHOTO_FILTER_JPEG;
     m_started = false;
