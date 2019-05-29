@@ -31,8 +31,6 @@
 *.out
 *.app
 
-cbplusui/cbplusui
-
 *.swp
 .deps/
 .libs/
@@ -50,4 +48,7 @@ cbplusui/cbplusui
 /libtool
 Makefile
 Makefile.in
+
+cbplusui/cbplusui
+softkbd/softkbd
 
