@@ -1,1 +1,1 @@
-EXTRA_DIST = fonts images languages
+EXTRA_DIST = images languages

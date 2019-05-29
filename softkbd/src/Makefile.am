@@ -3,7 +3,6 @@ AUTOMAKE_OPTIONS = subdir-objects
 noinst_LTLIBRARIES = libsoftkeyboard.la
 
 libsoftkeyboard_la_SOURCES = \
-    softkeyboard.h \
     ime.h \
     ime.c \
     common.h \

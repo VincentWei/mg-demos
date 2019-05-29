@@ -14,5 +14,5 @@ softkbd_SOURCES = \
 
 softkbd_LDADD = $(APP_LIBS)
 
-EXTRA_DIST = README.md include
+EXTRA_DIST = README.md MiniGUI.cfg include
 
