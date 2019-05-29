@@ -28,7 +28,7 @@
 #include <minigui/gdi.h>
 #include <minigui/window.h>
 
-#include "softkeyboard.h"
+#include "softkeywindow.h"
 
 #ifdef SOFTKBD_320_240
 #include "320x240/en_kbd_bkg.c"

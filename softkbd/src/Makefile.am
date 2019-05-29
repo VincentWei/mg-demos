@@ -3,19 +3,20 @@ AUTOMAKE_OPTIONS = subdir-objects
 noinst_LTLIBRARIES = libsoftkeyboard.la
 
 libsoftkeyboard_la_SOURCES = \
+    softkeyboard.h \
     ime.h \
     ime.c \
     common.h \
-    softkeyboard.h \
-    tooltip.h \
     common.c \
     en_kbd.c \
     num_kbd.c \
     pinyin_kbd.c \
     punct_kbd.c \
-    resource.c \
+    softkeywindow.h \
     softkeywindow.c \
+    tooltip.h \
     tooltip.c \
+    resource.c \
     animate/animate.h \
     animate/animate_sence.c \
     animate/instruction.h \

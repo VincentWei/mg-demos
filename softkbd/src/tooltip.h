@@ -24,10 +24,6 @@
 #ifndef __TOOLTIP_H__
 #define __TOOLTIP_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define TTW_W           30
 #define TTW_H           42
 
@@ -49,6 +45,10 @@ typedef struct {
     /* color palette */
     RGB         pal[TTW_PAL_LEN];
 } TTW_DATA, *TTW_PDATA;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 HWND CreateToolTip(HWND host);
 int ShowToolTip(HWND hwnd, int x, int y, char key_char);

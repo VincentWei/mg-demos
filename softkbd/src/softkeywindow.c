@@ -34,7 +34,7 @@
 #include <minigui/window.h>
 
 #include "common.h"
-#include "softkeyboard.h"
+#include "softkeywindow.h"
 #include "tooltip.h"
 
 #define HEIGHT_TASKBAR  40

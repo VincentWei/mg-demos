@@ -23,7 +23,7 @@
 
 #include <ctype.h>
 
-#include "softkeyboard.h"
+#include "softkeywindow.h"
 #include "common.h"
 #include "tooltip.h"
 

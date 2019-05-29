@@ -23,7 +23,8 @@
 #include <minigui/minigui.h>
 #include <minigui/gdi.h>
 #include <minigui/window.h>
-#include "softkeyboard.h"
+
+#include "softkeywindow.h"
 
 #define CN 1
 #define EN 2

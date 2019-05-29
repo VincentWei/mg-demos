@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "softkeyboard.h"
+#include "softkeywindow.h"
 #include "tooltip.h"
 
 static BITMAP bmp_f;
