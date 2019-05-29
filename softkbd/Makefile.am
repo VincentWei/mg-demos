@@ -1,6 +1,6 @@
 SUBDIRS = src
 
-AM_CPPFLAGS=-I../common/include/ -Isrc/
+AM_CPPFLAGS=-I../common/include/ -Iinclude/
 
 noinst_PROGRAMS=softkbd
 
@@ -14,5 +14,5 @@ softkbd_SOURCES = \
 
 softkbd_LDADD = $(APP_LIBS)
 
-EXTRA_DIST = README.md MiniGUI.cfg
+EXTRA_DIST = README.md include
 

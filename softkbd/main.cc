@@ -37,6 +37,8 @@
 #include "MyGetText.hh"
 #include "cJSON.h"
 
+#include "softkeyboard.h"
+
 #include "resource.h"
 
 int main (int argc, const char* argv[])
