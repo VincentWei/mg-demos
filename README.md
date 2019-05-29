@@ -29,7 +29,9 @@ to replace them with a real mechanism to interact with the underlying
 services. In the real product, we use `ubus` of OpenWRT as the
 mechanism to interact with the system services.
 
-## 
+## SoftKBD
+
+This demo creates a soft keyboard to input character with touch panel.
 
 ## Prerequisites
 
