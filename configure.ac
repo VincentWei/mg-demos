@@ -47,6 +47,32 @@ if test "$ac_cv_prog_gcc" = "yes"; then
     CFLAGS="$CFLAGS -Wstrict-prototypes -pipe"
 fi
 
+AC_ARG_WITH(softkbdsize,
+[  --with-softkbdsize=[480x272/320x240/240x320]])
+
+case "$with_softkbdsize" in
+  480x272)
+    AC_DEFINE(SOFTKBD_480_272, 1, [Define if keyboard size is 480x272.])
+    ;;
+  240x320)
+    AC_DEFINE(SOFTKBD_240_320, 1, [Define if keyboard size is 240x320.])
+    ;;
+  320x240)
+    AC_DEFINE(SOFTKBD_320_240, 1, [Define if keyboard size is 320x240.])
+    ;;
+  *)
+    AC_DEFINE(SOFTKBD_480_272, 1, [Define if keyboard size is 480x272.])
+    ;;
+esac
+
+AC_ARG_ENABLE([animate],
+[  --enable-animate,    enable animation for softkeyboard <default=yes>],
+build_animate=$enableval)
+
+if test "x$build_animate" = "xyes" ; then
+    AC_DEFINE(KBD_ANIMATE, 1, [Define if soft keyboard animation is supported.])
+fi
+
 dnl ========================================================================
 dnl check for installation of MiniGUI
 dnl ========================================================================
@@ -66,12 +92,14 @@ AC_CHECK_DECLS(_MGRM_PROCESSES, minigui_runmode="procs", foo=bar, [#include <min
 AM_CONDITIONAL(MGRM_PROCESSES, test "x$minigui_runmode" = "xprocs")
 
 AC_OUTPUT(
-Makefile
-common/Makefile
-common/src/Makefile
-cbplusui/Makefile
-cbplusui/res/Makefile
-cbplusui/misc/Makefile
-cbplusui/fakejbus/Makefile
-cbplusui/apps/Makefile
+    Makefile
+    common/Makefile
+    common/src/Makefile
+    softkbd/Makefile
+    softkbd/src/Makefile
+    cbplusui/Makefile
+    cbplusui/res/Makefile
+    cbplusui/misc/Makefile
+    cbplusui/fakejbus/Makefile
+    cbplusui/apps/Makefile
 )
