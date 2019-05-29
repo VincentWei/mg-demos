@@ -72,6 +72,21 @@
 
 #define NETWORK_STATE_UNKNOWN           255
 
+#define CAMERA_STATE_NOT_CONNECTED      0
+#define CAMERA_STATE_CONNECTED          1
+
+#define WORK_MODE_IDLE                  0
+#define WORK_MODE_AUC                   1
+#define WORK_MODE_MUC                   2
+
+#define CLOUD_TYPE_JOOPIC               0
+#define CLOUD_TYPE_FTP                  1
+
+#define MUC_STATE_IDLE                  0
+#define MUC_STATE_COLLECTING            1
+#define MUC_STATE_UPLOADING             2
+#define MUC_STATE_STOPPED               3
+
 typedef struct _DeviceState {
     char timeZone[LEN_TIMEZONE + 1];
     int transferMode;
@@ -103,6 +118,18 @@ typedef struct _DeviceState {
 
     int firmwareUpgrading;
     int firmwareUpgradeProgress;
+
+    int cameraState;
+
+    int workMode;
+    int mucState;
+
+    unsigned long long totalSpace;
+    unsigned long long freeSpace;
+    unsigned long long waitUpload;
+    unsigned long long waitUploadSize;
+    unsigned long long uploaded;
+    unsigned long long uploadedSize;
 } DeviceState;
 
 static DeviceState device_state;
@@ -130,6 +157,9 @@ static void init_device_state(void)
     device_state.lteState = NETWORK_STATE_CONNECTING;
     device_state.wifiState = NETWORK_STATE_DISCONNECTED;
     device_state.wifiAp = 0;
+
+    device_state.totalSpace = 8 * 1024 * 1024 * 1024LL;
+    device_state.freeSpace = 5 * 1024 * 1024 * 1024LL;
 }
 
 static void set_sys_time_zone (const char* tz)
@@ -1136,32 +1166,70 @@ static char* on_bind_method (const char* method, cJSON* msg)
 
 static char* on_am_method (const char* method, cJSON* msg)
 {
-    if (strcmp(method, "updateStatus") == 0) {
+    char* res = NULL;
+    static const char* state_ok = "{"
+        "\"retCode\": 0"
+    "}";
+    static const char* state_bad = "{"
+        "\"retCode\": 40009"
+    "}";
+    cJSON* name = cJSON_GetObjectItem (msg, "name");
+
+    if (strcmp(method, "start") == 0 && name && name->type == cJSON_String) {
+        if (strcasecmp (name->valuestring,
+                "cbplus.app.auto_upload_cloud") == 0) {
+            device_state.workMode = WORK_MODE_AUC;
+            res = strdup(state_ok);
+        }
+        else if (strcasecmp (name->valuestring,
+                "cbplus.app.manual_upload_cloud") == 0) {
+            device_state.workMode = WORK_MODE_MUC;
+            device_state.mucState = MUC_STATE_IDLE;
+            res = strdup(state_ok);
+        }
+        else {
+            _ERR_PRINTF("%s: Bad app name: %s\n",
+                __FUNCTION__, name->valuestring);
+            res = strdup(state_bad);
+        }
     }
-    else if (strcmp(method, "cbplus.app.auto_upload_cloud") == 0) {
+    else if (strcmp(method, "stop") == 0) {
+        device_state.workMode = WORK_MODE_IDLE;
+        device_state.waitUpload = 0;
+        device_state.waitUploadSize = 0;
+        device_state.uploaded = 0;
+        device_state.uploadedSize = 0;
+        res = strdup(state_ok);
     }
-    else if (strcmp(method, "cbplus.app.manual_upload_cloud") == 0) {
+    else if (strcmp(method, "update") == 0) {
     }
     else {
         _ERR_PRINTF("%s: Bad method: %s\n", __FUNCTION__, method);
     }
 
-    return NULL;
+    return res;
 }
 
 static char* on_muc_method (const char* method, cJSON* msg)
 {
-    if (strcmp(method, "updateStatus") == 0) {
-    }
-    else if (strcmp(method, "startTransfer") == 0) {
+    char* res = NULL;
+    static const char* state_ok = "{"
+        "\"retCode\": 0"
+    "}";
+
+    if (strcmp(method, "startTransfer") == 0) {
+        device_state.mucState = MUC_STATE_COLLECTING;
+        res = strdup(state_ok);
     }
     else if (strcmp(method, "stopTransfer") == 0) {
+        device_state.mucState = MUC_STATE_STOPPED;
+        res = strdup(state_ok);
     }
     else {
         _ERR_PRINTF("%s: Bad method: %s\n", __FUNCTION__, method);
     }
 
-    return NULL;
+    return res;
 }
 
 char *jbus_invoke(const char *path, const char *method, const char *message)
@@ -1367,7 +1435,15 @@ error:
 
 static char* event_generator_camera_connected(void)
 {
-    return NULL;
+    char* message = NULL;
+    static const char* format = "{\"vendor\":\"Nikon\", \"model\":\"D7100\"}";
+
+    if (device_state.cameraState == CAMERA_STATE_NOT_CONNECTED) {
+        message = strdup(format);
+        device_state.cameraState = CAMERA_STATE_CONNECTED;
+    }
+
+    return message;
 }
 
 static char* event_generator_camera_disconnected(void)
@@ -1377,12 +1453,136 @@ static char* event_generator_camera_disconnected(void)
 
 static char* event_generator_cloud_state_changed(void)
 {
-    return NULL;
+    char* message = NULL;
+    static const char* format = "{"
+        "\"vendor\":\"Nikon\","
+        "\"model\":\"D7100\","
+        "\"totalSpace\":\"%lu\","
+        "\"freeSpace\":\"%lu\","
+        "\"waitUpload\":%lu,"
+        "\"waitUploadSize\":\"%lu\","
+        "\"uploaded\":%lu,"
+        "\"uploadedSize\":\"%lu\""
+    "}";
+
+    int globalState = NETWORK_STATE_DISCONNECTED;
+    if (device_state.lteState == NETWORK_STATE_CONNECTED ||
+            device_state.wifiState == NETWORK_STATE_CONNECTED) {
+        globalState = NETWORK_STATE_CONNECTED;
+    }
+
+    if (device_state.cameraState == CAMERA_STATE_CONNECTED
+            && globalState == NETWORK_STATE_CONNECTED) {
+        message = calloc(sizeof(char), strlen(format) + 64 * 6);
+        sprintf(message, format, device_state.totalSpace,
+                device_state.freeSpace,
+                device_state.waitUpload,
+                device_state.waitUploadSize,
+                device_state.uploaded,
+                device_state.uploadedSize);
+    }
+
+    return message;
 }
+
+#define DEF_FILE_SIZE       (4567890)
+#define MAX_FILES           (123)
+
+#define UPLOAD_STATE_IDLE       0
+#define UPLOAD_STATE_READING    1
+#define UPLOAD_STATE_UPLOADING  2
 
 static char* event_generator_upload_state_changed(void)
 {
-    return NULL;
+    char* message = NULL;
+    static const char* state_idle = "{"
+        "\"state\":\"idle\","
+        "\"name\":null"
+    "}";
+    static const char* state_reading = "{"
+        "\"state\":\"reading\","
+        "\"name\":\"0.jpg\""
+    "}";
+    static const char* state_uploading = "{"
+        "\"state\":\"uploading\","
+        "\"name\":\"0.jpg\""
+    "}";
+    static int uploading_state = UPLOAD_STATE_IDLE;
+
+    int globalState = NETWORK_STATE_DISCONNECTED;
+    if (device_state.lteState == NETWORK_STATE_CONNECTED ||
+            device_state.wifiState == NETWORK_STATE_CONNECTED) {
+        globalState = NETWORK_STATE_CONNECTED;
+    }
+
+    if (device_state.cameraState != CAMERA_STATE_CONNECTED)
+        goto error;
+
+    if (device_state.workMode == WORK_MODE_AUC) {
+        if ((time(NULL) % 5) == 0) {
+            device_state.waitUpload++;
+            device_state.waitUploadSize += DEF_FILE_SIZE;
+        }
+    }
+    else if (device_state.workMode == WORK_MODE_MUC) {
+        if (device_state.mucState == MUC_STATE_COLLECTING) {
+            device_state.waitUpload++;
+            device_state.waitUploadSize += DEF_FILE_SIZE;
+
+            if (device_state.waitUpload == MAX_FILES) {
+                device_state.mucState = MUC_STATE_UPLOADING;
+            }
+        }
+        else if (device_state.mucState == MUC_STATE_COLLECTING
+                && device_state.waitUpload == 0) {
+           device_state.mucState = MUC_STATE_IDLE;
+        }
+    }
+
+    if (device_state.workMode == WORK_MODE_IDLE
+            || device_state.waitUpload == 0) {
+        message = strdup(state_idle);
+    }
+    else {
+        if ((time(NULL) % 2) == 0) {
+            switch (uploading_state) {
+            case UPLOAD_STATE_IDLE:
+                uploading_state = UPLOAD_STATE_READING;
+                message = strdup(state_reading);
+                break;
+
+            case UPLOAD_STATE_READING:
+                uploading_state = UPLOAD_STATE_UPLOADING;
+                message = strdup(state_uploading);
+                break;
+
+            case UPLOAD_STATE_UPLOADING:
+                if (globalState == NETWORK_STATE_CONNECTED) {
+                    device_state.waitUpload--;
+                    device_state.waitUploadSize -= DEF_FILE_SIZE;
+                    device_state.uploaded++;
+                    device_state.uploadedSize += DEF_FILE_SIZE;
+                    device_state.freeSpace -= DEF_FILE_SIZE;
+                    if (device_state.waitUpload > 0) {
+                        uploading_state = UPLOAD_STATE_READING;
+                        message = strdup(state_reading);
+                    }
+                    else {
+                        uploading_state = UPLOAD_STATE_IDLE;
+                        message = strdup(state_idle);
+                    }
+                }
+                break;
+
+            default:
+                _ERR_PRINTF("%s: logic error: not defined uploading state: %d\n",
+                    __FUNCTION__, uploading_state);
+            }
+        }
+    }
+
+error:
+    return message;
 }
 
 static char* event_generator_order_state_changed(void)

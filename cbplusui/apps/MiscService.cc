@@ -72,7 +72,7 @@ void* AsyncTaskFuncCtl::execute_task (pthread_t thread_id, int task_id, DWORD ad
         snprintf (cmd_arg, sizeof (cmd_arg) - 1, "{\"name\":\"%s\"}", (const char*)add_data);
     }
     else {
-        strncpy (cmd_arg, "{\"name\":NULL}", sizeof (cmd_arg) - 1);
+        strncpy (cmd_arg, "{\"name\":null}", sizeof (cmd_arg) - 1);
     }
 
     if (task_id == TASKID_MISC_START_FUNC) {
