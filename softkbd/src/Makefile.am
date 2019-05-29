@@ -26,6 +26,7 @@ libsoftkeyboard_la_SOURCES = \
     animate/alpha_animate.c \
     animate/common_animates.c \
     animate/common_animates.h \
+    ime-pti-en/mgpti.h \
     ime-pti-en/mgpti.c \
     ime-pti-en/mgpti_dict.c \
     ime-pti-en/mgpti_dict.h \
