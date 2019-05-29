@@ -1,13 +1,24 @@
 /*
-** $Id: pinyin_kbd.c 429 2008-07-21 07:28:44Z xkwu $
+** This file is a part of mg-demos package.
 **
-** pinyin.c: This file include pinyin soft keyboard code.
+** Copyright (C) 2008 ~ 2019 FMSoft (http://www.fmsoft.cn).
 **
-** Copyright (C) 2003 ~ 2008 FMSoft.
-** Copyright (C) 1999 ~ 2002 Wei Yongming.
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
+/*
+** pinyin_kbd.c: This file include pinyin soft keyboard code.
 **
 ** Create date: 2008/07/15
-**
 */
 
 #include "common.h"

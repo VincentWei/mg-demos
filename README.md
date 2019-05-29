@@ -51,11 +51,9 @@ scripts of build-minigui-4.0:
 
 https://github.com/VincenWei/build-minigui-4.0
 
-Otherwise, you can use the following commands to configure, make, install,
+Or, you can use the following commands to configure, make, install,
 and run the demos, once you have installed the dependent libraries listed
-above.
-
-To build the demos:
+above:
 
     $ ./autogen.sh; # if you got the source from GitHub repo
     $ ./configure;
@@ -65,6 +63,16 @@ To run a demo:
 
     $ cd cbplusui
     $ ./cbplusui
+
+## Configure Options
+
+The configure script provides the following options:
+
+    # with or without animation for soft keyboard:
+    --enable-animate
+
+    # specify the size of soft keyboard:
+    --with-softkbdsize=480x272/320x240/240x320
 
 ## Copying
 

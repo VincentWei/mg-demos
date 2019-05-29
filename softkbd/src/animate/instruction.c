@@ -1,13 +1,31 @@
+/*
+** This file is a part of mg-demos package.
+**
+** Copyright (C) 2008 ~ 2019 FMSoft (http://www.fmsoft.cn).
+**
+** Licensed under the Apache License, Version 2.0 (the "License");
+** you may not use this file except in compliance with the License.
+** You may obtain a copy of the License at
+**
+**     http://www.apache.org/licenses/LICENSE-2.0
+**
+** Unless required by applicable law or agreed to in writing, software
+** distributed under the License is distributed on an "AS IS" BASIS,
+** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+** See the License for the specific language governing permissions and
+** limitations under the License.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <minigui/common.h>
+
+#ifdef KBD_ANIMATE
+
 #include "instruction.h"
-
-
-//#define VAL_DEBUG
-#include <my_debug.h>
+#include "my_debug.h"
 
 int inline anim_get_instrct_size (char instrct)
 {
@@ -28,14 +46,14 @@ int inline anim_get_instrct_size (char instrct)
  * if return -1, error*/
 int anim_parse_instrct (char* ins_str, instrct_t* instrct)
 {
-	DWORD tmp;
-    STORE_INSTRCT(ins_str, instrct->id, instrct->is_index); 
+    DWORD tmp;
+    STORE_INSTRCT(ins_str, instrct->id, instrct->is_index);
     switch (instrct->id)
     {
         case FRAME_INSTRCT:
             STORE_DWORD (ins_str, tmp);
             instrct->frame_num = 1;
-			instrct->u.frame_param.img = (void*)tmp;
+            instrct->u.frame_param.img = (void*)tmp;
             return FRAME_INSTRCT_SIZE;
 
         case MOVE_INSTRCT:
@@ -58,7 +76,7 @@ int anim_parse_instrct (char* ins_str, instrct_t* instrct)
             STORE_WORD (ins_str, instrct->u.alpha_param.alpha0);
             STORE_BYTE (ins_str, instrct->frame_num);
             STORE_WORD (ins_str, instrct->u.alpha_param.alpha1);
-//			printf("alpha: %d-%d-%d\n", instrct->u.alpha_param.alpha0, instrct->frame_num, instrct->u.alpha_param.alpha1);
+//            printf("alpha: %d-%d-%d\n", instrct->u.alpha_param.alpha0, instrct->frame_num, instrct->u.alpha_param.alpha1);
             return ALPHA_INSTRCT_SIZE;
 
         case GOTO_INSTRCT:
@@ -79,3 +97,4 @@ int anim_parse_instrct (char* ins_str, instrct_t* instrct)
     }
 }
 
+#endif /* KBD_ANIMATE */
