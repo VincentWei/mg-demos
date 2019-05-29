@@ -2,7 +2,6 @@
 ** This file is a part of mg-demos package.
 **
 ** Copyright (C) 2019 FMSoft (http://www.fmsoft.cn).
-** Copyright (C) 2018 Beijing Joobot Technologies Co., Ltd.
 **
 ** Licensed under the Apache License, Version 2.0 (the "License");
 ** you may not use this file except in compliance with the License.
@@ -27,8 +26,16 @@
 #ifndef  __RESOURCE_INC
 #define  __RESOURCE_INC
 
-#define SCREEN_W       240
-#define SCREEN_H       240
+#if defined(SOFTKBD_480_272)
+    #define SCREEN_W       480
+    #define SCREEN_H       640
+#elif defined(SOFTKBD_320_240)
+    #define SCREEN_W       320
+    #define SCREEN_H       480
+#else
+    #define SCREEN_W       240
+    #define SCREEN_H       320
+#endif
 
 #ifdef _FULL_SCREEN
     #define STATUSBAR_X    0
@@ -104,11 +111,6 @@
 #define IDC_LEFT_BUTTON     705
 #define IDC_RIGHT_BUTTON    706
 
-// environment keys
-#define ENV_KEY_RES_PATH   "CBPLUS_UI_RES_PATH"
-#define ENV_KEY_CFG_PATH   "CBPLUS_UI_CFG_PATH"
-#define CFG_FILE_NAME      "cbplusui.cfg"
-
 // resource name
 // global fonts
 #if (_MINIGUI_VERSION_CODE >= _VERSION_CODE(4,0,0))
@@ -132,29 +134,6 @@
 #define FONT_SUBTITLE   GLOBAL_FONT_SM
 #define FONT_TOAST      GLOBAL_FONT_SM
 
-// global images
-#define GLOBAL_IMG_ARROW_LEFT   "images/arrow-left.png"
-#define GLOBAL_IMG_ARROW_RIGHT  "images/arrow-right.png"
-#define GLOBAL_IMG_ARROW_UP     "images/arrow-up.png"
-#define GLOBAL_IMG_ARROW_DOWN   "images/arrow-down.png"
-#define GLOBAL_IMG_MARK_CHECK   "images/mark-check.png"
-#define GLOBAL_IMG_OK           "images/icon-ok.png"
-#define GLOBAL_IMG_CANCEL       "images/icon-cancel.png"
-
-// common images
-#define COMMON_IMG_CLOUD        "images/icon-cloud.png"
-#define COMMON_IMG_FTP          "images/icon-ftp.png"
-#define COMMON_IMG_CAMERA_USB   "images/icon-camera-usb.png"
-#define COMMON_IMG_CAMERA_WLAN  "images/icon-camera-wlan.png"
-
-#define RES_GLOBAL_LOADING_NM   "images/loading-nm.gif"
-#define RES_GLOBAL_LOADING_SM   "images/loading-sm.gif"
-#define RES_GLOBAL_LOADING_XM   "images/loading-xm.gif"
-
-#define SIZE_LOADING_GIF_NM     120
-#define SIZE_LOADING_GIF_SM     28
-#define SIZE_LOADING_GIF_XM     16
-
 // colors
 #define COLOR_TITLE         0xFF6496C7L
 #define COLOR_SUBTITLE      0xFFDDDDDDL
@@ -170,60 +149,6 @@
 #define COLOR_TOAST_INFO    0xFF333333L
 #define COLOR_TOAST_WARNING 0xFF6496C7L
 #define COLOR_TOAST_ERROR   0xFF0C0CF5L
-
-// system-wide user-defined messages
-#define MSG_USBDEV_CHANGED      (MSG_USER + 101)
-#define MSG_WLANDEV_CHANGED     (MSG_USER + 102)
-#define MSG_BLEDEV_CHANGED      (MSG_USER + 103)
-#define MSG_WIFI_CHANGED        (MSG_USER + 104)
-#define MSG_BATTERY_CHANGED     (MSG_USER + 105)
-    #define BATTERY_STATUS_UNKNOWN      1
-    #define BATTERY_STATUS_CHARGING     2
-    #define BATTERY_STATUS_DISCHARGING  3
-    #define BATTERY_STATUS_NOT_CHARGING 4
-    #define BATTERY_STATUS_FULL         5
-
-#define MSG_CLOUD_CHANGED       (MSG_USER + 211)
-
-#define MSG_UPLOAD_CHANGED      (MSG_USER + 212)
-    #define UPLOAD_STATUS_IDLE      0
-    #define UPLOAD_STATUS_READING   1
-    #define UPLOAD_STATUS_UPLOADING 2
-    #define UPLOAD_STATUS_FAILED    3
-    #define UPLOAD_STATUS_UNKNOWN   4
-
-#define MSG_ORDER_CHANGED       (MSG_USER + 213)
-    #define ORDER_STATUS_OK         0
-    #define ORDER_STATUS_UNKNOWN    1
-    #define ORDER_STATUS_NONE       2
-
-#define MSG_TOUPLOAD_CHANGED    (MSG_USER + 214)
-#define MSG_UPLOADED_CHANGED    (MSG_USER + 215)
-
-#define MSG_FIRMWARE_DOWNLOAD_STATE     (MSG_USER + 251)
-#define MSG_FIRMWARE_UPGRADE_STATE      (MSG_USER + 252)
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void statusBar_onScreenLockTimeoutChanged (int timeout);
-void statusBar_enableScreenLock (BOOL enable);
-
-int statusBar_getBatteryStatus (int* cap);
-
-#define SBINFO_DEV_CAMERA_VENDOR    1
-#define SBINFO_DEV_CAMERA_MODEL     2
-#define SBINFO_DEV_SSID             3
-const char* statusBar_getDevInfo (int devId);
-
-#define SBINFO_SPACE_FREE           1
-#define SBINFO_SPACE_TOTAL          2
-float statusBar_getSpaceInfo (int spaceId);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __RESOURCE_INC */
 

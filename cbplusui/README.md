@@ -1,6 +1,6 @@
 # CBPlusUI
 
-This demo is a simplified edition of a real product called `CBPlus`,
+This demo is a simplified edition of a real product called [CBPlus],
 which is developed by [Joobot Technologies].
 
 ## Features
@@ -45,4 +45,5 @@ all images used by this demo. You can not use, copy, modify,
 and/or distribute the images included in the directory
 `res/images` for any purpose other than demonstration.
 
+[CBPlus]: https://www.joobot.com/cn/joopic/cbplus/
 [Joobot Technologies]: https://www.joobot.com

@@ -65,6 +65,7 @@ case "$with_softkbdsize" in
     ;;
 esac
 
+build_animate="yes"
 AC_ARG_ENABLE([animate],
 [  --enable-animate,    enable animation for softkeyboard <default=yes>],
 build_animate=$enableval)
