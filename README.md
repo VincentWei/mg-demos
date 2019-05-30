@@ -6,11 +6,11 @@ its key components, including mGEff, mGPlus, mGNCS, and mGNCS4Touch.
 The demos are supplements to [mGUXDemo]. They illustrate the following
 features which are not implemented in mGUXDemo:
 
-1. A smaller framework derived from mGUXDemo (`common/`).
-1. Using GNU gettext for localization.
-1. Different input methods with touch panel:
+1. The activity-driven framework derived from mGUXDemo (`common/`).
+1. Vairous input methods:
    * Screen locker with digital password.
-   * A soft keyboard to input Latin letters, digits, and symbol characters.
+   * A soft keyboard to input Latin words, digits, and Chinese characters.
+1. Using GNU gettext `.mo` files for localization.
 1. Interacting with system services by using an asynchronous task thread,
 for example:
    * Getting WiFi hotspots list and connecting to a specific WiFi hotspot.
@@ -29,12 +29,21 @@ to replace them with a real mechanism to interact with the underlying
 services. In the real product, we use `ubus` of OpenWRT as the
 mechanism to interact with the system services.
 
+For more information, please visit:
+
+https://github.com/VincentWei/mg-demos/tree/master/cbplusui
+
 ## SoftKBD
 
-This demo creates a soft keyboard to input character with touch panel.
+This demo creates a soft keyboard to input characters with touch panel.
+
+For more information, please visit:
+
+https://github.com/VincentWei/mg-demos/tree/master/softkbd
 
 ## Prerequisites
 
+  * A C/C++ compiler compatible with C++ 11 (gcc 4.5+ or clang).
   * MiniGUI: v3.2.2 or later
   * MiniGUI Resource: v3.0.12 or later
   * mGPlus: v1.4.0 or later
@@ -46,14 +55,15 @@ This demo creates a soft keyboard to input character with touch panel.
 
 ## Building
 
-We strongly recommend you to build this demo by using the fetching and building
-scripts of build-minigui-4.0:
+If you are using MiniGUI 4.0, we strongly recommend you to build
+the demos by using the fetching and building scripts of
+`build-minigui-4.0`:
 
 https://github.com/VincenWei/build-minigui-4.0
 
-Or, you can use the following commands to configure, make, install,
-and run the demos, once you have installed the dependent libraries listed
-above:
+Or, if you are using MiniGUI 3.2, you can use the following commands
+to configure, make, install, and run the demos, once you have installed
+the dependent libraries listed above:
 
     $ ./autogen.sh; # if you got the source from GitHub repo
     $ ./configure;
@@ -73,6 +83,13 @@ The configure script provides the following options:
 
     # specify the size of soft keyboard:
     --with-softkbdsize=480x272/320x240/240x320
+
+## Directory
+
+* `common/`: The implementation of the framework.
+* `res/`: Common resource files used by all demos.
+* `cbplusui/`: The demo of CBPlusUI.
+* `softkbd/`: The demo of SoftKBD.
 
 ## Copying
 
