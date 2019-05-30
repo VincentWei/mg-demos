@@ -101,17 +101,15 @@ static void kw_update (key_window_t *kw, HWND hWnd)
 static void sw_update(stroke_window_t* sw, HWND hWnd)
 {
     HDC hdc;
-    gal_pixel old_tecolor;
 
     EraseBbGround(hWnd, &sw->bound);
 
-    if (strlen(sw->str) != 0) {
+    if (*sw->str != 0) {
         hdc = GetDC(hWnd);
         SetBkMode (hdc, BM_TRANSPARENT);
-        old_tecolor = SetTextColor (hdc, PIXEL_lightwhite);
+        SetTextColor(hdc, RGB2Pixel(hdc, 190, 190, 190));
         SelectFont(hdc, sw->stroke_font);
-        DrawText (hdc, sw->str, -1, &(sw->bound), DT_LEFT);
-        SetTextColor(hdc, old_tecolor);
+        DrawText (hdc, sw->str, -1, &(sw->bound), DT_SINGLELINE | DT_LEFT | DT_VCENTER);
         ReleaseDC(hdc);
     }
 }
@@ -154,7 +152,7 @@ static void vw_update(view_window_t *vw, HWND hWnd, vw_element_t* element)
 #ifndef __FILL_DIRECT__
                 RECT rc;
                 SetTextColor(hdc, RGB2Pixel(hdc, 190, 190, 190));
-                DrawText(hdc, element[i].string, -1, &element[i].bound, 0);
+                DrawText(hdc, element[i].string, -1, &element[i].bound, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 
                 rc = element[i].bound;
                 rc.top --;
@@ -162,17 +160,16 @@ static void vw_update(view_window_t *vw, HWND hWnd, vw_element_t* element)
                 rc.left --;
                 rc.right --;
                 SetTextColor(hdc, RGB2Pixel(hdc, 155, 50, 155));
-                DrawText(hdc, element[i].string, -1, &rc, 0);
+                DrawText(hdc, element[i].string, -1, &rc, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 #else
                 //printf("element[i].string=%s\n", element[i].string);
                 //printf("element[i].bound:l=%d,t=%d,r=%d,b=%d\n", element[i].bound.left,
                 //    element[i].bound.top, element[i].bound.right, element[i].bound.bottom);
-                DrawText(hdc, element[i].string, -1, &element[i].bound, 0);
+                DrawText(hdc, element[i].string, -1, &element[i].bound, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 #endif
             }
         } else {
             if(vw->style & VW_EL_PRESSED) {
-                if (vw->data)
 #ifdef __FILL_DIRECT__
     #if 0
                     FillBoxWithBitmap(hdc,element->bound.left,
@@ -188,8 +185,9 @@ static void vw_update(view_window_t *vw, HWND hWnd, vw_element_t* element)
                             element->bound.bottom - element->bound.top);
     #endif
                 SetTextColor(hdc, COLOR_lightwhite);
-                DrawText(hdc, element->string, -1, &element->bound, 0);
+                DrawText(hdc, element->string, -1, &element->bound, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 #else
+                RECT rc;
                 rc = element->bound;
                 rc.top --;
                 rc.left --;
@@ -199,7 +197,7 @@ static void vw_update(view_window_t *vw, HWND hWnd, vw_element_t* element)
                 rc.bottom ++;
                 rc.right ++;
                 SetTextColor(hdc, RGB2Pixel(hdc, 100, 50, 100));
-                DrawText(hdc, element->string, -1, &rc, 0);
+                DrawText(hdc, element->string, -1, &rc, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 #endif
             } else
                 EraseBbGround(hWnd, &vw->bound);
@@ -317,7 +315,9 @@ static int en_proc_msg(key_board_t* key_board, HWND hwnd, int message, WPARAM wP
                 key_board->action.operation = AC_NULL;
                 key_down->style &= ~KEY_PAD_PRESSED;
                 key_down->update(key_down, hwnd);
+#ifdef KBD_TOOLTIP
                 HideToolTip((HWND)((SOFTKBD_DATA *)GetWindowAdditionalData(hwnd))->tooltip_win);
+#endif
                 lbuttondown = 0;
                 key_down = NULL;
             }
@@ -386,13 +386,12 @@ static int init_en_view_window(HWND hWnd, view_window_t *vw)
     vw->max_str_len = 20;
 #endif
 
-
     vw->update          = vw_update;
     vw->set_elements    = vw_set_elements;
     vw->clear_elements  = vw_clear_elements;
     vw->get_element     = vw_get_element;
 
-    vw->view_font = CreateLogFontByName ("*-fixed-rrncnn-*-14-ISO8859-1");
+    vw->view_font = CreateLogFontByName ("ttf-fixed-rrncnn-*-14-ISO8859-1");
     if (NULL == vw->view_font){
         _MY_PRINTF("create logfont for view window error.\n");
         return -1;
@@ -461,7 +460,7 @@ static int init_en_stroke_window (HWND hWnd, stroke_window_t *sw)
 
     memset(sw->str, 0, SW_STR_LEN);
 
-    sw->stroke_font = CreateLogFontByName ("*-fixed-rrncnn-*-9-ISO8859-1");
+    sw->stroke_font = CreateLogFontByName ("ttf-fixed-rrncnn-*-9-ISO8859-1");
 #if 0
     sw->stroke_font = CreateLogFont ("rbf", "fixed", "ISO8859-1",
                         FONT_WEIGHT_REGULAR, FONT_SLANT_ROMAN,

@@ -99,7 +99,7 @@ static void sw_update(stroke_window_t* sw, HWND hWnd)
         hdc = GetDC(hWnd);
 
         SetBkMode(hdc, BM_TRANSPARENT);
-        old_tecolor = SetTextColor(hdc, PIXEL_lightwhite);
+        old_tecolor = SetTextColor(hdc, RGB2Pixel(hdc, 155, 50, 155));
         old_font = SelectFont(hdc, sw->stroke_font);
         DrawText(hdc, sw->str, -1, &(sw->bound), DT_LEFT);
         SelectFont(hdc, old_font);
@@ -164,7 +164,8 @@ static void vw_update(view_window_t *vw, HWND hWnd, vw_element_t* element)
                             element->bound.right - element->bound.left,
                             element->bound.bottom - element->bound.top);
     #endif
-                SetTextColor(hdc, COLOR_lightwhite);
+                //SetTextColor(hdc, COLOR_lightwhite);
+                SetTextColor(hdc, RGB2Pixel(hdc, 155, 50, 155));
                 DrawText(hdc, element->string, -1, &element->bound, 0);
 #else
                 rc = element->bound;
@@ -302,7 +303,9 @@ int pinyin_proceed_msg(key_board_t* key_board, HWND hwnd,
             if(key && HT_OUT == wParam) {
                 key->style &= ~KEY_PAD_PRESSED;
                 key->update(key, hwnd);
+#ifdef KBD_TOOLTIP
                 HideToolTip((HWND)((SOFTKBD_DATA *)GetWindowAdditionalData(hwnd))->tooltip_win);
+#endif
                 lbuttondown = 0;
                 key = NULL;
             }
@@ -343,7 +346,7 @@ static int init_py_view_window (HWND hWnd, view_window_t *vw)
     vw->clear_elements = vw_clear_elements;
     vw->get_element = vw_get_element;
 
-    vw->view_font = CreateLogFontByName ("*-fixed-rrncnn-*-12-GB2312");
+    vw->view_font = CreateLogFontByName ("ttf-fixed-rrncnn-*-12-GB2312");
 
     if (NULL == vw->view_font){
         _MY_PRINTF("create logfont for view window error.\n");
@@ -425,7 +428,7 @@ static int init_py_stroke_window(HWND hWnd, stroke_window_t *sw)
                         FONT_UNDERLINE_NONE, FONT_STRUCKOUT_NONE,
                         9, 0);
 #endif
-    sw->stroke_font = CreateLogFontByName ("*-times-rrncnn-*-9-ISO8859-1");
+    sw->stroke_font = CreateLogFontByName ("ttf-times-rrncnn-*-9-ISO8859-1");
     if (NULL == sw->stroke_font){
         _MY_PRINTF("create logfont for stroke window error.\n");
         return -1;

@@ -81,7 +81,8 @@
 #define TTW_MASK_BMP            11
 #define TTW_FONT_BMP            12
 
-#define __FILL_DIRECT__            1
+#define __FILL_DIRECT__         1
+
 typedef struct _md_key_t {
 
     /* the corrosponding rect of the key pad */
@@ -253,8 +254,10 @@ typedef struct _kw_add_data_t {
     /* for func key press */
     BITMAP func_key_press;
 
+#ifdef KBD_TOOLTIP
     /*handle of the tooltip window*/
     HWND tooltip_win;
+#endif
 } kw_add_data_t;
 
 typedef struct _key_window_t {
@@ -394,6 +397,7 @@ typedef struct _SOFTKBD_DATA
 {
     key_board_t* keyboard ;
     int         is_opened;
+    int         is_closing;
 
     int         ime_status_language;
     int         ime_status_encode;
@@ -401,8 +405,9 @@ typedef struct _SOFTKBD_DATA
 
     HWND        target_hwnd;
     int         current_board_idx;
+#ifdef KBD_TOOLTIP
     HWND        tooltip_win;
-
+#endif
 } SOFTKBD_DATA;
 
 #ifdef __cplusplus

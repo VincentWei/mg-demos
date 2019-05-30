@@ -65,6 +65,15 @@ case "$with_softkbdsize" in
     ;;
 esac
 
+build_tooltip="yes"
+AC_ARG_ENABLE([tooltip],
+[  --enable-tooltip,    enable tooltip for softkeyboard <default=yes>],
+build_tooltip=$enableval)
+
+if test "x$build_tooltip" = "xyes" ; then
+    AC_DEFINE(KBD_TOOLTIP, 1, [Define if soft keyboard animation is supported.])
+fi
+
 build_animate="yes"
 AC_ARG_ENABLE([animate],
 [  --enable-animate,    enable animation for softkeyboard <default=yes>],

@@ -28,6 +28,8 @@
 
 #include "animate.h"
 
+#define IDC_TIMER   100
+
 static inline DWORD getcurtime(void)
 {
     struct timeval tv;
@@ -530,7 +532,7 @@ int StartTimerAnimateSence (ANIMATE_SENCE *as)
     as->start_time = getcurtime();
     as->old_time = as->start_time;
 
-    return SetTimerEx((HWND)as, 0, as->interval/10, as_timer_draw);
+    return SetTimerEx((HWND)as, IDC_TIMER, as->interval/10, as_timer_draw);
 }
 
 static BOOL as_set_state(ANIMATE_SENCE *as, int state)

@@ -261,7 +261,7 @@ static void destroy_key_win(void)
     free(keyboard[1]);
     destroy_punct_keyboard(keyboard[2]);
     free(keyboard[2]);
-   destroy_py_keyboard(keyboard[3]);
+    destroy_py_keyboard(keyboard[3]);
     free(keyboard[3]);
 }
 
@@ -323,12 +323,12 @@ static LRESULT DefaultIMEWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 {
     SOFTKBD_DATA* pdata = NULL;
 
-   if (!active)
-      return 0;
+    if (!active)
+        return 0;
 
     if (message != MSG_CREATE) {
         pdata = (SOFTKBD_DATA*)GetWindowAdditionalData(hWnd);
-   }
+    }
 
     switch (message) {
         case MSG_IME_SETPOS:
@@ -384,30 +384,36 @@ static LRESULT DefaultIMEWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             }
         case MSG_IME_GETTARGET:
             return (LRESULT)pdata->target_hwnd;
+
         case MSG_IME_USER_SENDCHAR:
             send_imeword_to_target(pdata, pdata->keyboard->action.str, strlen(pdata->keyboard->action.str));
             break;
-        case MSG_IME_OPEN:
-            //printf("MSG_IME_OPEN\n");
-            {
-#ifndef MGDESKTOP_VERSION
-                show_ime_window(hWnd, pdata, TRUE, wParam);
 
-                if(GetIMEStatus(IME_STATUS_AUTOTRACK)) {
-                    IME_TARGET_INFO info;
-                    GetIMETargetInfo(&info);
-                    SendMessage(hWnd, MSG_IME_SET_TARGET_INFO, 0, (LPARAM)(&info));
-                }
-#endif
+        case MSG_IME_OPEN: {
+            pdata->is_closing = FALSE;
+            if (pdata->is_opened)
+                break;
+
+            show_ime_window(hWnd, pdata, TRUE, wParam);
+
+            if (GetIMEStatus(IME_STATUS_AUTOTRACK)) {
+                IME_TARGET_INFO info;
+                GetIMETargetInfo(&info);
+                SendMessage(hWnd, MSG_IME_SET_TARGET_INFO, 0, (LPARAM)(&info));
             }
             break;
+        }
+
         case MSG_IME_CLOSE:
-            //printf("MSG_IME_CLOSE\n");
-#ifndef MGDESKTOP_VERSION
-            show_ime_window(hWnd, pdata, FALSE, wParam);
-#endif
+            pdata->is_closing = TRUE;
             break;
 
+        case MSG_IDLE:
+            if (pdata->is_closing) {
+                pdata->is_closing = FALSE;
+                show_ime_window(hWnd, pdata, FALSE, wParam);
+            }
+            break;
     }
 
     return DefaultMainWinProc(hWnd, message, wParam, lParam);
@@ -504,8 +510,8 @@ static LRESULT SoftKeyWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
                 pdata->ime_status_language = IME_LANGUAGE_LATIN;
             }
 
-         /*clear old state */
-         pdata->keyboard->clear(pdata->keyboard);
+            /*clear old state */
+            pdata->keyboard->clear(pdata->keyboard);
             pdata->current_board_idx = status_table[pdata->current_board_idx][y];
             pdata->keyboard = keyboard[pdata->current_board_idx];
 
@@ -517,6 +523,7 @@ static LRESULT SoftKeyWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
         case AC_SEND_CN_STRING:
             SendMessage(hWnd, MSG_IME_USER_SENDCHAR, 0, 0);
             break;
+
         case AC_SEND_MSG:
 #if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 1) && !defined(_STAND_ALONE)
             Send2ActiveWindow(mgTopmostLayer,
@@ -532,6 +539,7 @@ static LRESULT SoftKeyWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
             return 0;
         }
         break;
+
         case MSG_PAINT: {
             HDC hdc = BeginPaint(hWnd);
             do {
@@ -548,10 +556,12 @@ static LRESULT SoftKeyWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
             EndPaint(hWnd, hdc);
             return 0;
         }
+
         case MSG_ERASEBKGND:
             if (pdata && pdata->keyboard)
                 pdata->keyboard->update(pdata->keyboard, hWnd, wParam, (RECT*)lParam);
             return 0;
+
         case MSG_CLOSE:
             UnregisterIMEWindow(hWnd);
             //SendMessage(HWND_DESKTOP, MSG_IME_UNREGISTER, (WPARAM) hWnd, 0);
@@ -606,7 +616,7 @@ void mgiEnableSoftKeypad(BOOL e)
 }
 
 #ifdef _MGRM_PROCESSES
-HWND mgiCreateSoftKeypad(void (*cb)(BOOL IsShown))
+HWND skbCreateSoftKeyboard(void (*cb)(BOOL IsShown))
 {
    op_cb = cb;
    return create_ime_win(HWND_DESKTOP);
@@ -644,7 +654,7 @@ static void* start_ime(void* data)
 static pthread_t imethread;
 
 /* the argument of 'hosting' is ignored. */
-HWND mgiCreateSoftKeypad(void (*cb)(BOOL IsShown))
+HWND skbCreateSoftKeyboard(void (*cb)(BOOL IsShown))
 {
     op_cb = cb;
     IME_INFO ime_info;

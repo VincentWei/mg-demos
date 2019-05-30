@@ -779,7 +779,9 @@ int symbol_proc_msg (key_board_t* key_board, HWND hwnd,
                     }
                     key_down->style &= ~KEY_PAD_PRESSED;
                     key_down->update(key_down, hwnd);
+#ifdef SKB_TOOLTIP
                     HideToolTip((HWND)((SOFTKBD_DATA *)GetWindowAdditionalData(hwnd))->tooltip_win);
+#endif
                     key_board->action.operation = AC_NULL;
                 }
                 if(key != NULL) {
@@ -803,7 +805,9 @@ int symbol_proc_msg (key_board_t* key_board, HWND hwnd,
             key_board->action.operation = AC_NULL;
             key_down->style &= ~KEY_PAD_PRESSED;
             key_down->update(key_down, hwnd);
+#ifdef SKB_TOOLTIP
             HideToolTip((HWND)((SOFTKBD_DATA *)GetWindowAdditionalData(hwnd))->tooltip_win);
+#endif
             lbuttondown = 0;
             key_down = NULL;
         }
@@ -947,18 +951,24 @@ vw_element_t* vw_get_element(struct _view_window_t* view_window, POINT p)
 
 void share_key_update(md_key_t *mk, HWND hWnd)
 {
+#ifdef SKB_TOOLTIP
     HWND ttw;
+#endif
     HDC hdc ;
     PBITMAP pbmp ;
-    int x, y;
-    char key_ch;
 
     if (!mk->data)
         return;
 
+#ifdef SKB_TOOLTIP
     ttw = (HWND)((SOFTKBD_DATA *)GetWindowAdditionalData(hWnd))->tooltip_win;
+#endif
     if (mk->style & KEY_PAD_PRESSED) {
         if (mk->style & KEY_PAD_CHAR) {
+#ifdef SKB_TOOLTIP
+            char key_ch;
+            int x, y;
+
             x = mk->bound.left + RECTW(mk->bound)/2 - TTW_W/2;
             y = mk->bound.top + RECTH(mk->bound)/2 - TTW_H;
             if (islower(mk->key_char) && case_mode == PTI_CASE_ABC)
@@ -967,6 +977,7 @@ void share_key_update(md_key_t *mk, HWND hWnd)
                 key_ch = mk->key_char;
             ClientToScreen(hWnd, &x, &y);
             ShowToolTip(ttw, x , y, key_ch);
+#endif
         } else {
             hdc = GetDC(hWnd);
             pbmp = (PBITMAP)mk->data;

@@ -120,7 +120,7 @@ static ime_input_table* load_input_method (void)
     }
 
 #endif
-    table->PhraseFile =(FILE *) ime_tab_phr;
+    table->PhraseFile =(FILE *)ime_tab_phr;
     table->AssocFile  =(FILE *)ime_tab_lx;
     return table;
 
@@ -596,11 +596,10 @@ BOOL ime_pinyin_init (void)
 {
     CurIME          = 1;
     input_table[0]  = IntCode_Init();
-    input_table [1] = load_input_method();
+    input_table[1]  = load_input_method();
     cur_table       = input_table [1];
     return TRUE;
 }
-
 
 static ime_input_table *IntCode_Init (void)
 {

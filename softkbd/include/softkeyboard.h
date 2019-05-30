@@ -39,7 +39,7 @@
 extern "C" {
 #endif  /* __cplusplus */
 
-HWND mgiCreateSoftKeypad(void (*cb)(BOOL IsShown));
+HWND skbCreateSoftKeyboard(void (*cb)(BOOL IsShown));
 
 #ifdef __cplusplus
 }
