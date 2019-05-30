@@ -103,8 +103,16 @@ static NCS_PROP_ENTRY spin_props [] =
     {0, 0}
 };
 
-#define HSTART  25
-#define HSPACE  40
+#define MARGIN_LEFT     10
+#define MARGIN_TOP      10
+
+#define FIELD_HEIGHT    25
+#define FIELD_WIDTH     200
+#define LABEL_WIDTH     100
+#define EDITOR_WIDTH    200
+#define EDITOR_HEIGHT   160
+
+#define SPACING         10
 
 //START_OF_TEMPLATE
 static NCS_WND_TEMPLATE _ctrl_templ[] =
@@ -112,7 +120,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_STATIC,
         0,
-        10, HSTART, 70, 25,
+        MARGIN_LEFT, MARGIN_TOP, LABEL_WIDTH, FIELD_HEIGHT,
         WS_VISIBLE,
         WS_EX_NONE,
         "Name:",
@@ -123,7 +131,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_SLEDIT,
         ID_NAME,
-        100, HSTART, 150, 25,
+        MARGIN_LEFT + LABEL_WIDTH + SPACING, MARGIN_TOP, FIELD_WIDTH, FIELD_HEIGHT,
         WS_BORDER | WS_VISIBLE | NCSS_EDIT_LEFT,
         WS_EX_NONE,
         "",
@@ -134,7 +142,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_STATIC,
         0,
-        10, HSTART + HSPACE, 70, 25,
+        MARGIN_LEFT, MARGIN_TOP + FIELD_HEIGHT + SPACING, LABEL_WIDTH, FIELD_HEIGHT,
         WS_VISIBLE,
         WS_EX_NONE,
         "Age:",
@@ -145,7 +153,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_SPINBOX,
         ID_SPIN,
-        100, HSTART + HSPACE, 70, 25,
+        MARGIN_LEFT + LABEL_WIDTH + SPACING, MARGIN_TOP + FIELD_HEIGHT + SPACING, FIELD_WIDTH, FIELD_HEIGHT,
         WS_VISIBLE | NCSS_SPNBOX_NUMBER | NCSS_SPNBOX_AUTOLOOP,
         WS_EX_NONE,
         "",
@@ -157,7 +165,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_STATIC,
         0,
-        10, HSTART + 2 * HSPACE, 70, 25,
+        MARGIN_LEFT, MARGIN_TOP + (FIELD_HEIGHT + SPACING) * 2, LABEL_WIDTH, FIELD_HEIGHT,
         WS_VISIBLE,
         WS_EX_NONE,
         "Country:",
@@ -168,7 +176,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_SLEDIT,
         ID_COUN,
-        100, HSTART + 2 * HSPACE, 130, 25,
+        MARGIN_LEFT + LABEL_WIDTH + SPACING, MARGIN_TOP + (FIELD_HEIGHT + SPACING) * 2, FIELD_WIDTH, FIELD_HEIGHT,
         WS_BORDER | WS_VISIBLE | NCSS_EDIT_CENTER | NCSS_EDIT_UPPERCASE,
         WS_EX_NONE,
         "",
@@ -179,7 +187,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_STATIC,
         0,
-        10, HSTART + 3 * HSPACE, 70, 25,
+        MARGIN_LEFT, MARGIN_TOP + (FIELD_HEIGHT + SPACING) * 3, LABEL_WIDTH, FIELD_HEIGHT,
         WS_VISIBLE,
         WS_EX_NONE,
         "City :",
@@ -190,7 +198,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_SLEDIT,
         ID_CITY,
-        100, HSTART + 3 * HSPACE, 150, 25,
+        MARGIN_LEFT + LABEL_WIDTH + SPACING, MARGIN_TOP + (FIELD_HEIGHT + SPACING) * 3, FIELD_WIDTH, FIELD_HEIGHT,
         WS_BORDER | WS_VISIBLE | NCSS_EDIT_LOWERCASE,
         WS_EX_NONE,
         "",
@@ -201,10 +209,10 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_STATIC,
         0,
-        10, HSTART + 4 * HSPACE, 70, 25,
+        MARGIN_LEFT, MARGIN_TOP + (FIELD_HEIGHT + SPACING) * 4, LABEL_WIDTH, FIELD_HEIGHT,
         WS_VISIBLE,
         WS_EX_NONE,
-        "Passwd :",
+        "Password:",
         static_props,
         NULL,
         NULL, NULL, 0, 0
@@ -212,7 +220,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_SLEDIT,
         ID_PSWD,
-        100, HSTART + 4 * HSPACE, 150, 25,
+        MARGIN_LEFT + LABEL_WIDTH + SPACING, MARGIN_TOP + (FIELD_HEIGHT + SPACING) * 4, FIELD_WIDTH, FIELD_HEIGHT,
         WS_BORDER | WS_VISIBLE | NCSS_SLEDIT_PASSWORD,
         WS_EX_NONE,
         "",
@@ -223,10 +231,10 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_STATIC,
         0,
-        10, HSTART + 5 * HSPACE, 70, 25,
+        MARGIN_LEFT, MARGIN_TOP + (FIELD_HEIGHT + SPACING) * 5, LABEL_WIDTH, FIELD_HEIGHT,
         WS_VISIBLE,
         WS_EX_NONE,
-        "Info :",
+        "Bio:",
         static_props,
         NULL,
         NULL, NULL, 0, 0
@@ -234,7 +242,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_TEXTEDITOR,
         ID_INFO,
-        100, HSTART + 5 * HSPACE, 200, 160,
+        MARGIN_LEFT + LABEL_WIDTH + SPACING, MARGIN_TOP + (FIELD_HEIGHT + SPACING) * 5, EDITOR_WIDTH, EDITOR_HEIGHT,
         WS_BORDER | WS_VISIBLE | WS_VSCROLL | NCSS_EDIT_BASELINE,
         WS_EX_NONE,
         "",
@@ -246,7 +254,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_BUTTON,
         ID_SIGNUP,
-        240, 400, 80, 25,
+        240, 380, 80, 25,
         WS_VISIBLE | NCSS_NOTIFY,
         WS_EX_NONE,
         "Sign Up",
@@ -257,7 +265,7 @@ static NCS_WND_TEMPLATE _ctrl_templ[] =
     {
         NCSCTRL_BUTTON,
         ID_CANCEL,
-        120, 400, 80, 25,
+        120, 380, 80, 25,
         WS_VISIBLE | NCSS_NOTIFY,
         WS_EX_NONE,
         "Cancel",
