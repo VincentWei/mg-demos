@@ -9,6 +9,8 @@ APP_LIBS = \
     ../common/src/libcommon.la
 
 softkbd_SOURCES = \
+    SignUpActivity.hh \
+    SignUpActivity.cc \
     resource.h \
     main.cc
 

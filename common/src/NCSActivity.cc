@@ -30,10 +30,10 @@
 #include "ActivityStack.hh"
 #include "NCSActivity.hh"
 
-static BOOL onKeyDownDefault (mMainWnd* self, int msg, int scancode, DWORD shiftkeys)
+static BOOL onMyKeyDown (mMainWnd* self, int msg, int scancode, DWORD shiftkeys)
 {
     NCSActivity* act = (NCSActivity*) Activity::getActivityFromHWND (self->hwnd);
-    if (msg == MSG_KEYDOWN && scancode == SCANCODE_ESCAPE && act->isAutoEscape ()) {
+    if (msg == MSG_KEYDOWN && scancode == SCANCODE_ESCAPE) {
         if (act->onCancel () == 0)
             return FALSE;
     }
@@ -145,7 +145,9 @@ HWND NCSActivity::createHWND()
         m_tmpl->user_data = (DWORD)this;
 
         window = (mWidget*)ncsCreateMainWindowIndirect (m_tmpl, GET_GLOBAL_HOSTING);
-        ncsSetComponentHandler((mComponent*)window, MSG_KEYDOWN, reinterpret_cast<void*>(onKeyDownDefault));
+        if (isAutoEscape ())
+            ncsSetComponentHandler((mComponent*)window, MSG_KEYDOWN,
+                reinterpret_cast<void*>(onMyKeyDown));
     }
     else {
 #if 0
