@@ -27,271 +27,192 @@
 #include <minigui/control.h>
 
 #include "ime_pinyin.h"
-#include "ime_tab_pinyin.h"
+#include "ime_zh_table.h"
 
-static void FindMatchKey(void);
-static void FillMatchChars(int j);
-static void FillAssociateChars(int index);
-static void FindAssociateKey(int index);
-static ime_input_table* IntCode_Init(void);
-static int CurIME;
+#define MAX_INPUT_LENGTH        15
+#define MAX_WORD_LENGTH         20
+#define SELECT_KEY_LENGTH       16
+#define END_KEY_LENGTH          16
+#define MAX_SEL_LENGTH          58
 
+static IME_ZH_TABLE* cur_table;
 
-static ime_input_table *input_table[NR_INPUTMETHOD],*cur_table = NULL;
-static char seltab[16][MAX_PHRASE_LENGTH];
+static void find_matched_key(void);
+static void fill_matched_chars(int j);
+static void fill_associated_chars(int index);
+static void find_associated_key(int index);
 
-static int CurSelNum=0;   /* Current Total Selection Number */
-static unsigned long InpKey[MAX_INPUT_LENGTH],save_InpKey[MAX_INPUT_LENGTH];
-   /* Input key buffer */
-static int InputCount,InputMatch, StartKey,EndKey;
+static char seltab[16][MAX_WORD_LENGTH];
+static int curr_sel_num=0;   /* Current Total Selection Number */
+
+/* Input key buffer */
+static unsigned int input_key[MAX_INPUT_LENGTH];
+static unsigned int saved_input_key[MAX_INPUT_LENGTH];
+static int input_count, input_matched, start_key, end_key;
+
 static int WORK_TIM;
-static int save_StartKey,save_EndKey, save_MultiPageMode,
-           save_NextPageIndex, save_CurrentPageIndex;
-static int NextPageIndex,CurrentPageIndex,MultiPageMode;
-/* When enter MultiPageMode:
-   StartKey .... CurrentPageIndex .... NextPageIndex .... EndKey
+
+/*
+** When enter multi_page_mode:
+**  start_key .... curr_page_idx .... next_page_idx .... end_key
 */
-static unsigned long val1, val2,key1,key2;
-static int IsAssociateMode;
-static int CharIndex[MAX_INPUT_LENGTH];   // starting index of matched char/phrases
+static int save_start_key,save_end_key, save_multi_page_mode,
+           save_next_page_idx, save_curr_page_idx;
+static int next_page_idx, curr_page_idx, multi_page_mode;
 
-static char *key_map[]=
+static unsigned int val1, val2, key1, key2;
+static int is_associate_mode;
+
+// starting index of matched char/phrases
+static int char_index[MAX_INPUT_LENGTH];
+
+static void clear_input (void)
 {
-    "abc",
-    "def",
-    "ghi",
-    "jkl",
-    "mno",
-    "pqrs",
-    "tuv",
-    "wxyz"
-};
+    memset (input_key, 0, sizeof (input_key));
+    memset (seltab, 0, sizeof (seltab));
 
-static int UseAssociateMode = 0;
-
-/* 6 bit a key mask */
-static const unsigned long mask[]=
-{
-  0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-  0x3F000000, 0x3FFC0000, 0x3FFFF000, 0x3FFFFFC0, 0x3FFFFFFF, 0x3FFFFFFF,
-  0x3FFFFFFF, 0x3FFFFFFF, 0x3FFFFFFF, 0x3FFFFFFF, 0x3FFFFFFF, 0x3FFFFFFF
-};
-
-/***************************************************************************
- *                          some local functions                           *
- ***************************************************************************/
-
-static ime_input_table* load_input_method (void)
-{
-#if MGUI_BYTEORDER == MGUI_BIG_ENDIAN
-    int i;
-#endif
-
-    ime_input_table *table;
-    table= (ime_input_table*)ime_tab;
-    table->item=(ITEM*)(table+1);
-
-#if MGUI_BYTEORDER == MGUI_BIG_ENDIAN
-
-    table->TotalKey = ArchSwap32(table->TotalKey);
-    table->MaxPress = ArchSwap32(table->MaxPress);
-    table->MaxDupSel= ArchSwap32(table->MaxDupSel);
-    table->TotalChar= ArchSwap32(table->TotalChar);
-    table->PhraseNum= ArchSwap32(table->PhraseNum);
-
-    for (i = 0; i < 64; i++)
-    {
-        table->KeyIndex [i] = ArchSwap16(table->KeyIndex[i]);
-    }
-
-#endif
-
-    if( strcmp(MAGIC_NUMBER, table->magic_number) )
-    {
-        goto fail;
-    }
-
-#if MGUI_BYTEORDER == MGUI_BIG_ENDIAN
-    for (i = 0; i < table->TotalChar; i++)
-    {
-        table->item[i].key1 = ArchSwap32(table->item[i].key1);
-        table->item[i].key2 = ArchSwap32(table->item[i].key2);
-        table->item[i].frequency = ArchSwap16(table->item[i].frequency);
-    }
-
-#endif
-    table->PhraseFile =(FILE *)ime_tab_phr;
-    table->AssocFile  =(FILE *)ime_tab_lx;
-    return table;
-
-fail:
-    return NULL;
+    multi_page_mode     = 0;
+    next_page_idx       = 0;
+    curr_page_idx       = 0;
+    curr_sel_num        = 0;
+    input_count         = 0;
+    input_matched       = 0;
+    is_associate_mode   = 0;
 }
 
-
-static void ClrIn (void)
+static void find_associated_key (int index)
 {
-    memset (InpKey, 0, sizeof ( InpKey));
-    memset ( seltab, 0, sizeof ( seltab));
+    unsigned int offset;
+    unsigned short ofs[2];
 
-    MultiPageMode    = 0;
-    NextPageIndex    = 0;
-    CurrentPageIndex = 0;
-    CurSelNum        = 0;
-    InputCount       = 0;
-    InputMatch       = 0;
-    IsAssociateMode  = 0;   /* lian xiang */
-}
-
-static void FindAssociateKey (int index)
-{
-    char *fp =(char*)cur_table->AssocFile;
-    int  ofs[2], offset;
-
-    if (index < 0xB0A1)
-    {
-        StartKey = EndKey = 0;
+    if (index < 0xB0A1) {
+        start_key = end_key = 0;
         return;  /* no match */
     }
 
     offset = (index / 256 - 0xB0) * 94 + index % 256 - 0xA1;
-    fp    +=(offset *sizeof (int));
-    memcpy (ofs, fp, (sizeof (int)*2));
+    ofs[0] = cur_table->associated[offset];
+    ofs[1] = cur_table->associated[offset + 1];
 
-#if MGUI_BYTEORDER == MGUI_BIG_ENDIAN
-    ofs[0] = ArchSwap32(ofs[0]);
-    ofs[1] = ArchSwap32(ofs[1]);
-#endif
-
-    StartKey = 72 * 94 + 1 + ofs[0];
-    EndKey = 72 * 94 + 1 + ofs[1];
+    start_key = 72 * 94 + 1 + ofs[0];
+    end_key = 72 * 94 + 1 + ofs[1];
 }
 
 static void load_phrase (int phrno, char *tt)
 {
-    char *fp =(char*)cur_table->PhraseFile;
-    int  ofs[2], len;
+    unsigned int ofs[2];
+    int len;
 
-    fp +=((phrno +1)<<2);
-    memcpy (ofs, fp, (sizeof(int)*2));
+    ofs[0] = cur_table->word_offsets[phrno].off_begin;
+    ofs[1] = cur_table->word_offsets[phrno].off_end;
 
-#if MGUI_BYTEORDER == MGUI_BIG_ENDIAN
-    ofs[0] = ArchSwap32(ofs[0]);
-    ofs[1] = ArchSwap32(ofs[1]);
-#endif
-    len =ofs[1] -ofs[0];
-
-    if (len > 128 || len <= 0 )
-    {
-        strcpy( tt, "error" );
+    len = ofs[1] - ofs[0];
+    if (len > 128 || len <= 0 ) {
+        strcpy (tt, "error");
         return;
     }
 
-    ofs[0] +=( cur_table->PhraseNum + 1)<< 2;
- /* Add the index area length */
-    fp     =(char*)cur_table->PhraseFile;
-    fp    +=ofs[0];
-    memcpy (tt, fp, len);
-
+    memcpy (tt, cur_table->words + ofs[0], len);
     tt[len] = 0;
 }
 
 static void putstr (unsigned char *p)
 {
     int index,len =strlen(( char*)p);
-//    printf ("++++++%s\n", p);
-    if (InputCount <= InputMatch)  /* All Match */
-    {
+    if (input_count <= input_matched) {
+        /* All Match */
         index = (int)p[len-2] * 256 + p[len-1];
-        ClrIn();
+        clear_input();
 
-        if (UseAssociateMode)
-        {
-            FindAssociateKey(index);
-            CurrentPageIndex = StartKey;
-            MultiPageMode = 0;
-            FillAssociateChars(StartKey);
+        if (cur_table->associate_mode) {
+            find_associated_key(index);
+            curr_page_idx = start_key;
+            multi_page_mode = 0;
+            fill_associated_chars(start_key);
 
-            if (CurSelNum > 0)
-            {
-                IsAssociateMode = 1;
+            if (curr_sel_num > 0) {
+                is_associate_mode = 1;
             }
         }
-    }else
-    {
-        int nCount = InputCount - InputMatch,nMatch = InputMatch,i;
-        MultiPageMode = NextPageIndex = CurrentPageIndex = 0;
-        InputCount = InputMatch = 0;
+    }
+    else {
+        int nCount = input_count - input_matched,nMatch = input_matched,i;
+        multi_page_mode = next_page_idx = curr_page_idx = 0;
+        input_count = input_matched = 0;
 
         for (i =0; i <nCount; i++)
-            save_InpKey[i] =InpKey[nMatch+i];
+            saved_input_key[i] =input_key[nMatch+i];
 
-        memset (InpKey, 0, sizeof(InpKey));
+        memset (input_key, 0, sizeof(input_key));
 
         for (i =1; i <=nCount; i++)  /* feed the additional keys */
         {
-            InpKey[InputCount] =save_InpKey[InputCount];
-            InputCount++;
+            input_key[input_count] = saved_input_key[input_count];
+            input_count++;
 
-            if (InputCount <=InputMatch+1)
+            if (input_count <=input_matched+1)
             {
-                FindMatchKey ();
-                MultiPageMode    =0;
-                CurrentPageIndex =StartKey;
-                FillMatchChars (StartKey);
+                find_matched_key ();
+                multi_page_mode    =0;
+                curr_page_idx =start_key;
+                fill_matched_chars (start_key);
             }
 
         }
 
-        if (InputMatch ==0)    /* left key has no match, delete */
+        if (input_matched ==0)    /* left key has no match, delete */
         {
-            ClrIn();
+            clear_input();
             return;
         }
 
     }
 }
 
+/* 6 bit a key mask */
+static const unsigned int mask[]=
+{
+    0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+    0x3F000000, 0x3FFC0000, 0x3FFFF000, 0x3FFFFFC0, 0x3FFFFFFF, 0x3FFFFFFF,
+    0x3FFFFFFF, 0x3FFFFFFF, 0x3FFFFFFF, 0x3FFFFFFF, 0x3FFFFFFF, 0x3FFFFFFF
+};
+
 
 /* After add/delete a char, search the matched char/phrase, update the
-   StartKey/EndKey key,  save the related keys at first, if no match
+   start_key/end_key key,  save the related keys at first, if no match
    is found, we may restore its original value
 */
-static void FindMatchKey (void)
+static void find_matched_key (void)
 {
-//    save_StartKey           = StartKey;
-//    save_EndKey           = EndKey;
-//    save_MultiPageMode    = MultiPageMode;
-//    save_NextPageIndex    = NextPageIndex;
-//    save_CurrentPageIndex = CurrentPageIndex;
+    save_start_key       = 0;
+    save_end_key         = 0;
+    save_multi_page_mode = 0;
+    save_next_page_idx   = 0;
+    save_curr_page_idx   = 0;
 
-    save_StartKey           = 0;
-    save_EndKey           = 0;
-    save_MultiPageMode    = 0;
-    save_NextPageIndex    = 0;
-    save_CurrentPageIndex = 0;
+    val1 = input_key[4] | (input_key[3]<<6) | (input_key[2]<<12) |
+            (input_key[1]<<18) | (input_key[0]<<24);
+    val2 = input_key[9] | (input_key[8]<<6) | (input_key[7]<<12) |
+            (input_key[6]<<18) | (input_key[5]<<24);
 
-    val1 = InpKey[4] | (InpKey[3]<<6) | (InpKey[2]<<12) | (InpKey[1]<<18) | (InpKey[0]<<24);
-    val2 = InpKey[9] | (InpKey[8]<<6) | (InpKey[7]<<12) | (InpKey[6]<<18) | (InpKey[5]<<24);
-
-    if (InputCount == 1)
-        StartKey = cur_table->KeyIndex[InpKey[0]];
+    if (input_count == 1)
+        start_key = cur_table->key_indices[input_key[0]];
     else
-        StartKey = CharIndex[InputCount-1];
+        start_key = char_index[input_count-1];
 
-    EndKey = cur_table->KeyIndex[InpKey[0]+1];
+    end_key = cur_table->key_indices[input_key[0]+1];
 
-    for (; StartKey <EndKey; StartKey++)
-    {
-        key1 = (cur_table->item[StartKey].key1 & mask[InputCount+5]);
-        key2 = (cur_table->item[StartKey].key2 & mask[InputCount]);
+    for (; start_key <end_key; start_key++) {
+        key1 = (cur_table->items[start_key].key1 & mask[input_count+5]);
+        key2 = (cur_table->items[start_key].key2 & mask[input_count]);
 
-        if (key1 > val1) break;
-        if (key1 < val1) continue;
-        if (key2 < val2) continue;
+        if (key1 < val1 || key2 < val2)
+            continue;
+
         break;
     }
-    CharIndex[InputCount] = StartKey;
+
+    char_index[input_count] = start_key;
 }
 
 /*  Find the matched chars/phrases and fill it into SelTab
@@ -301,60 +222,58 @@ static void FindMatchKey (void)
     0-9 Selection can contain only 30 chinese chars
 */
 
-static void FillAssociateChars (int index)
+static void fill_associated_chars (int index)
 {
-    unsigned char str[25];
-    int PhraseNo, CurLen = 0;
-    char *fp =(char*)cur_table->AssocFile;
+    char str[25];
+    int current_length = 0;
 
-    CurSelNum = 0;
+    curr_sel_num = 0;
 
-    while ( CurSelNum < cur_table->MaxDupSel && index < EndKey && CurLen < MAX_SEL_LENGTH)
-    {
+    while (curr_sel_num < cur_table->max_dup_sel &&
+            index < end_key && current_length < MAX_SEL_LENGTH) {
+#if 0
+        char *fp =(char*)cur_table->AssocFile;
+        int PhraseNo;
         fp =(char*)cur_table->AssocFile;
         fp +=(index<<2);
-        memcpy (&PhraseNo, fp, sizeof (int));
-#if MGUI_BYTEORDER == MGUI_BIG_ENDIAN
-        PhraseNo = ArchSwap32(PhraseNo);
+        memcpy(&PhraseNo, fp, sizeof (int));
+        load_phrase( PhraseNo, str);
 #endif
-        load_phrase( PhraseNo, (char *)str );
-        strcpy(seltab[CurSelNum],(char *)(str+2));
-        CurLen += strlen(seltab[CurSelNum++]);
+
+        load_phrase(cur_table->associated[index], str);
+        strcpy(seltab[curr_sel_num], str+2);
+        current_length += strlen(seltab[curr_sel_num++]);
         index++;
     }
 
     /* check if more than one page */
-    if ( index < EndKey && CurSelNum == cur_table->MaxDupSel )
-    {
-      /* has another matched key, so enter MultiPageMode, has more pages */
-        NextPageIndex = index;
-        MultiPageMode = 1;
+    if (index < end_key && curr_sel_num == cur_table->max_dup_sel) {
+      /* has another matched key, so enter multi_page_mode, has more pages */
+        next_page_idx = index;
+        multi_page_mode = 1;
     }
-    else if (MultiPageMode)
-    {
-        NextPageIndex = StartKey; /* rotate selection */
+    else if (multi_page_mode) {
+        next_page_idx = start_key; /* rotate selection */
     }
-    else
-        MultiPageMode = 0;
+    else {
+        multi_page_mode = 0;
     }
+}
 
-int pinyin_predict_pord(void *method, const char *lookfor, char * buffer, int buffer_len, int index)
+int pinyin_predict_word(void *method, const char* lookfor,
+        char* buffer, int buffer_len, int index)
 {
     int    lenth = 0;
     static char lookfor_bk[4];
 
-
     lenth =0;
-    {
-        sprintf (lookfor_bk, "%s", lookfor);
-        bzero (seltab, 16*MAX_PHRASE_LENGTH);
-        putstr ((unsigned char *)lookfor);
-    }
+    sprintf (lookfor_bk, "%s", lookfor);
+    bzero (seltab, 16*MAX_WORD_LENGTH);
+    putstr ((unsigned char *)lookfor);
 
     buffer[0] = 0;
-    while (1)
-    {
-        FillAssociateChars (StartKey+index/10 *10);
+    while (1) {
+        fill_associated_chars (start_key+index/10 *10);
 
         lenth +=(strlen (seltab[index])+1);
         if (0==strlen (seltab[index]))
@@ -370,104 +289,90 @@ int pinyin_predict_pord(void *method, const char *lookfor, char * buffer, int bu
 
 
 }
-static void FillMatchChars (int j)
+static void fill_matched_chars (int j)
 {
-    int SelNum = 0, CurLen = 0;
-    //bzero( seltab, sizeof( seltab ) );
+    int selected_number = 0, current_length = 0;
 
-    while ((cur_table->item[j].key1 & mask[InputCount+5])==val1&&
-           (cur_table->item[j].key2 & mask[InputCount])==val2&&
-           SelNum <cur_table->MaxDupSel&&j<EndKey&&
-           CurLen < MAX_SEL_LENGTH
-          )
-    {
-        unsigned short ch = cur_table->item[j].ch;
-#if MGUI_BYTEORDER == MGUI_BIG_ENDIAN
-        ch = ArchSwap16 (ch);
-#endif
+    while ((cur_table->items[j].key1 & mask[input_count+5])==val1&&
+           (cur_table->items[j].key2 & mask[input_count])==val2&&
+           selected_number < cur_table->max_dup_sel && j < end_key &&
+           current_length < MAX_SEL_LENGTH) {
 
+        unsigned short ch = cur_table->items[j].ch;
         if (ch < 0xA1A1)
-            load_phrase (ch, seltab[SelNum]);
-        else
-        {
-            memcpy (&seltab[SelNum], &(cur_table->item[j].ch), 2);
-            seltab [SelNum][2] = '\0';
+            load_phrase (ch, seltab[selected_number]);
+        else {
+            memcpy (&seltab[selected_number], &(cur_table->items[j].ch), 2);
+            seltab [selected_number][2] = '\0';
         }
 
-        CurLen += strlen(seltab[SelNum++]);
+        current_length += strlen(seltab[selected_number++]);
         j++;
     }
 
-    if (SelNum == 0)  /* some match found */
-    {
-        StartKey = save_StartKey;
-        EndKey = save_EndKey;
-        MultiPageMode = save_MultiPageMode;
-        NextPageIndex = save_NextPageIndex;
-        CurrentPageIndex = save_CurrentPageIndex;
+    if (selected_number == 0) {
+        /* some match found */
+        start_key = save_start_key;
+        end_key = save_end_key;
+        multi_page_mode = save_multi_page_mode;
+        next_page_idx = save_next_page_idx;
+        curr_page_idx = save_curr_page_idx;
         return;    /* keep the original selection */
     }
 
-    CurSelNum = SelNum;
+    curr_sel_num = selected_number;
 
-    for (SelNum = CurSelNum; SelNum < 16; SelNum++)
-        seltab[SelNum][0] = '\0';  /* zero out the unused area */
+    for (selected_number = curr_sel_num; selected_number < 16; selected_number++)
+        seltab[selected_number][0] = '\0';  /* zero out the unused area */
 
-    InputMatch = InputCount; /* until now we have some matches */
+    input_matched = input_count; /* until now we have some matches */
 
     /* check if more than one page */
-    if (j < EndKey && (cur_table->item[j].key1 & mask[InputCount+5]) == val1 &&
-        (cur_table->item[j].key2 & mask[InputCount] ) == val2 &&
-        CurSelNum == cur_table->MaxDupSel
-       )
-    {
-      /* has another matched key, so enter MultiPageMode, has more pages */
-        NextPageIndex = j;
-        MultiPageMode = 1;
+    if (j < end_key && (cur_table->items[j].key1 & mask[input_count+5]) == val1 &&
+            (cur_table->items[j].key2 & mask[input_count] ) == val2 &&
+            curr_sel_num == cur_table->max_dup_sel) {
+      /* has another matched key, so enter multi_page_mode, has more pages */
+        next_page_idx = j;
+        multi_page_mode = 1;
     }
-    else if (MultiPageMode)
-    {
-        NextPageIndex = StartKey; /* rotate selection */
+    else if (multi_page_mode) {
+        next_page_idx = start_key; /* rotate selection */
     }
     else
-        MultiPageMode = 0;
+        multi_page_mode = 0;
 }
 
-int pinyin_match_keystokes (void *method, const char* keystokes, char* buff, int buffer_len, int cursor);
-/* return value: Has output? */
-
-BOOL char_match_exist (const char *match)
+static BOOL char_match_exist (const char *match)
 {
     int len = strlen (match);
     int idex = 0;
     int key = 0;
 
-    bzero (InpKey, sizeof (long)*InputCount);
-    FindMatchKey ();
-    ClrIn();
+    bzero (input_key, sizeof (long)*input_count);
+    find_matched_key ();
+    clear_input();
 
     for (idex=0; idex<len; idex++)
     {
-       key =(char)(cur_table->KeyMap[(int)(*(match+idex))]);
-       InpKey[InputCount++] = key;
+       key =(char)(cur_table->key_map[(int)(*(match+idex))]);
+       input_key[input_count++] = key;
     }
 
-    FindMatchKey();
-    CurrentPageIndex = StartKey;
-    MultiPageMode    = 1;
-    FillMatchChars(StartKey);
+    find_matched_key();
+    curr_page_idx = start_key;
+    multi_page_mode    = 1;
+    fill_matched_chars(start_key);
 
-    if (EndKey== 0)
-    {
-       return FALSE;
+    if (end_key== 0) {
+        return FALSE;
     }
-    else
-    {
-       return TRUE;
+    else {
+        return TRUE;
     }
-
 }
-int pinyin_translate_word(void *method, const char *strokes, char *buffer, int buffer_len, int index)
+
+int pinyin_translate_word(void *method, const char *strokes,
+        char *buffer, int buffer_len, int index)
 {
     static char strokes_bk[32];
     static int  length = 0;
@@ -480,66 +385,74 @@ int pinyin_translate_word(void *method, const char *strokes, char *buffer, int b
         return -1;
 
     len = strlen(strokes);
-    if (len != length || 0!=bcmp (strokes_bk, strokes, length)||WORK_TIM || page!=index/10)
-    {
+    if (len != length || 0!=bcmp (strokes_bk, strokes, length)||WORK_TIM || page!=index/10) {
         sprintf (strokes_bk, "%s", strokes);
         WORK_TIM = FALSE;
         page = 0;
         length = len;
-        ClrIn ();
+        clear_input ();
 
-        for (idex = 0; idex<length && idex < MAX_INPUT_LENGTH ; idex++)
-        {
-            key = cur_table->KeyMap[(int)(*(strokes+idex))];
-            InpKey [InputCount++] = key;
+        for (idex = 0; idex<length && idex < MAX_INPUT_LENGTH ; idex++) {
+            key = cur_table->key_map[(int)(*(strokes+idex))];
+            input_key [input_count++] = key;
         }
 
-        FindMatchKey ();
-        CurrentPageIndex = StartKey;
-        MultiPageMode    = 1;
-        FillMatchChars(StartKey);
-        if (InputMatch<InputCount)
+        find_matched_key ();
+        curr_page_idx = start_key;
+        multi_page_mode    = 1;
+        fill_matched_chars(start_key);
+        if (input_matched<input_count)
                return -1;
     }
 
     lensum  =0;
     buffer[0] =0;
-    MultiPageMode =1;
+    multi_page_mode =1;
 
-    while (MultiPageMode)
-    {
-        if (page!=index/10)
-        {
+    while (multi_page_mode) {
+        if (page!=index/10) {
             page= index/10;
-            FillMatchChars (StartKey+page*10);
+            fill_matched_chars (start_key+page*10);
         }
 
-        if (InputMatch<InputCount)
-               return -1;
-        lensum+=(strlen(seltab[index%10])+1);
+        if (input_matched < input_count)
+            return -1;
 
-        if (lensum>buffer_len)
+        lensum+=(strlen(seltab[index%10])+1);
+        if (lensum > buffer_len)
            return index;
+
         if (0==strlen (seltab[index%10]))
             break;
+
         strcat (buffer, seltab[index%10]);
         strcat (buffer, " ");
         index++;
-
     }
-   return -1;
 
+    return -1;
 }
 
-int pinyin_match_keystokes (void *method, const char* keystokes, char* buff, int buffer_len, int cursor)
+static const char *digit_to_letter_map[] = {
+    "abc",
+    "def",
+    "ghi",
+    "jkl",
+    "mno",
+    "pqrs",
+    "tuv",
+    "wxyz"
+};
+
+int pinyin_match_keystokes (void *method, const char* keystokes,
+        char* buff, int buffer_len, int cursor)
 {
     static int  len = 0;
     static char match_buff[2][100][20];
     static int  match_idex = 0;
     static int  max = 1;
     int    idex, idex1, idex2, idex3;
-    char   *keys;
-
+    const char *keys;
 
     if (cursor == -1)
         return -1;
@@ -553,24 +466,22 @@ int pinyin_match_keystokes (void *method, const char* keystokes, char* buff, int
     match_idex = 0;
     max = 1;
 
-    for (idex = 0; idex < len; idex++)
-    {
-        keys = key_map[*(keystokes+idex)-'2'];
+    for (idex = 0; idex < len; idex++) {
+        keys = digit_to_letter_map[*(keystokes+idex)-'2'];
 
-        for (idex1 = 0; idex1<max; idex1++)
-        {
-            for (idex2 = 0; idex2<strlen (keys); idex2++)
-            {
+        for (idex1 = 0; idex1<max; idex1++) {
+            for (idex2 = 0; idex2 < strlen (keys); idex2++) {
+
                 sprintf (match_buff[(match_idex+1)%2][idex3], "%s%c", match_buff[match_idex][idex1], *(keys+idex2));
                 if (char_match_exist (match_buff[(match_idex+1)%2][idex3]))
                     idex3++;
             }
         }
-    max   = idex3;
-    idex3 = 0;
-    match_idex = (match_idex+1)%2;
-    }
 
+        max   = idex3;
+        idex3 = 0;
+        match_idex = (match_idex+1)%2;
+    }
 
     {
         int lensum =0;
@@ -588,49 +499,17 @@ int pinyin_match_keystokes (void *method, const char* keystokes, char* buff, int
         }
         return -1;
     }
-    return -1;
 
+    return -1;
 }
+
+extern IME_ZH_TABLE _ime_zh_tab_pinyin;
 
 BOOL ime_pinyin_init (void)
 {
-    CurIME          = 1;
-    input_table[0]  = IntCode_Init();
-    input_table[1]  = load_input_method();
-    cur_table       = input_table [1];
+    cur_table = &_ime_zh_tab_pinyin;
+    cur_table->associate_mode = 1;
+    cur_table->max_dup_sel = 10;
     return TRUE;
 }
 
-static ime_input_table *IntCode_Init (void)
-{
-    ime_input_table *table;
-    static
-    ime_input_table my_table;
-    int i,index;
-
-    UseAssociateMode = 1;  /* force to no associate */
-    table            = &my_table;
-
-   /* reset to zero. */
-    memset (table, 0, sizeof (ime_input_table));
-    strcpy(table->magic_number,MAGIC_NUMBER);
-    strcpy(table->ename, "IntCode");
-    strcpy(table->cname, "¡¾ÄÚÂë¡¿");
-    strcpy(table->selkey, "0123456789abcdef");
-    table->last_full = 1;
-
-    for(i = 0; i < 128; i++)
-    {
-        table->KeyMap[i] = 0;
-
-        if ((i >= '0' && i <= '9') || (i >= 'a' && i <= 'f'))
-        {
-            if (i >= '0' && i <= '9')
-                index = i - '0';
-            else index = i -'a' + 10;
-                table->KeyMap[i] = index;
-            table->KeyName[index] = toupper(i);
-        }
-    }
-    return table;
-}

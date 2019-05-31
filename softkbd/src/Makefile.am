@@ -38,6 +38,7 @@ libsoftkeyboard_la_SOURCES = \
     ime-pti-en/mgpti_user_dict.h \
     ime-pinyin-zh/ime_zh_table.h \
     ime-pinyin-zh/ime_zh_table_pinyin.c \
+    ime-pinyin-zh/ime_pinyin.c \
     $(NULL)
 
 EXTRA_DIST=240x320 320x240 480x272

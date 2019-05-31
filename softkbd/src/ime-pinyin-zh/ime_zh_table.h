@@ -22,7 +22,7 @@
 typedef struct _IME_ZH_ITEM {
     unsigned int key1;
     unsigned int key2;
-    unsigned short off_idx;
+    unsigned short ch;
     unsigned short freq;
 } IME_ZH_ITEM;
 
@@ -48,6 +48,10 @@ typedef struct {
     const IME_ZH_WORD_OFF *word_offsets;
     const unsigned char* words;
     const unsigned short* associated;
+
+    // runtime fields
+    int associate_mode;
+    int max_dup_sel;
 } IME_ZH_TABLE;
 
 #ifdef __cplusplus

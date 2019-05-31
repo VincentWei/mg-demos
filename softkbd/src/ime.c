@@ -51,7 +51,7 @@ int cb_pinyin_translate_word(const char *strokes, char *buffer, int buffer_len, 
 
 int cb_pinyin_predict_word(const char *strokes, char *buffer, int buffer_len, int index, int mode)
 {
-    return pinyin_predict_pord(NULL, strokes, buffer, buffer_len, index);
+    return pinyin_predict_word(NULL, strokes, buffer, buffer_len, index);
 }
 
 int cb_pinyin_init(void* filename)
