@@ -9,7 +9,11 @@ a legacy MiniGUI component.
 
 ## Features
 
-...
+1. Create and register an IME window.
+1. Show or hide the IME window automatically.
+1. Show tooltip window when the user pressed a key.
+1. Switch different input methods.
+1. Convert the characters between different encodings.
 
 ## Copying
 
