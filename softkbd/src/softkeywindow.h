@@ -395,7 +395,7 @@ typedef struct _key_board_t {
 
 typedef struct _SOFTKBD_DATA
 {
-    key_board_t* keyboard ;
+    key_board_t* keyboard;
     int         is_opened;
     int         is_closing;
 

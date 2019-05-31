@@ -136,17 +136,19 @@ static void putstr (unsigned char *p)
         }
     }
     else {
-        int nCount = input_count - input_matched,nMatch = input_matched,i;
+        int count = input_count - input_matched;
+        int matched = input_matched, i;
+
         multi_page_mode = next_page_idx = curr_page_idx = 0;
         input_count = input_matched = 0;
 
-        for (i =0; i <nCount; i++)
-            saved_input_key[i] =input_key[nMatch+i];
+        for (i =0; i <count; i++)
+            saved_input_key[i] =input_key[matched+i];
 
         memset (input_key, 0, sizeof(input_key));
+        for (i = 1; i <= count; i++) {
+            /* feed the additional keys */
 
-        for (i =1; i <=nCount; i++)  /* feed the additional keys */
-        {
             input_key[input_count] = saved_input_key[input_count];
             input_count++;
 
@@ -160,8 +162,8 @@ static void putstr (unsigned char *p)
 
         }
 
-        if (input_matched ==0)    /* left key has no match, delete */
-        {
+        if (input_matched == 0) {
+            /* left key has no match, delete */
             clear_input();
             return;
         }
@@ -231,15 +233,6 @@ static void fill_associated_chars (int index)
 
     while (curr_sel_num < cur_table->max_dup_sel &&
             index < end_key && current_length < MAX_SEL_LENGTH) {
-#if 0
-        char *fp =(char*)cur_table->AssocFile;
-        int PhraseNo;
-        fp =(char*)cur_table->AssocFile;
-        fp +=(index<<2);
-        memcpy(&PhraseNo, fp, sizeof (int));
-        load_phrase( PhraseNo, str);
-#endif
-
         load_phrase(cur_table->associated[index], str);
         strcpy(seltab[curr_sel_num], str+2);
         current_length += strlen(seltab[curr_sel_num++]);
@@ -458,7 +451,7 @@ int pinyin_match_keystokes (void *method, const char* keystokes,
         return -1;
 
     WORK_TIM = TRUE;
-    len =strlen (keystokes);
+    len = strlen (keystokes);
     bzero (match_buff, 2*100*20);
 
     idex2 = 0;
@@ -487,16 +480,16 @@ int pinyin_match_keystokes (void *method, const char* keystokes,
         int lensum =0;
         buff[0]    =0;
 
-        while (cursor<max)
-        {
-            lensum+=(strlen (match_buff[match_idex][cursor++])+1);
-            if (lensum>buffer_len)
-            {
+        while (cursor<max) {
+            lensum += (strlen (match_buff[match_idex][cursor++])+1);
+
+            if (lensum > buffer_len) {
                 return (cursor-1);
             }
             strcat (buff, match_buff[match_idex][cursor-1]);
             strcat (buff, " ");
         }
+
         return -1;
     }
 

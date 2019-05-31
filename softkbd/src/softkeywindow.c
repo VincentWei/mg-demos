@@ -64,33 +64,67 @@ static int status_table [4][4] = {
    { 0, -1,  1, -1}
 };
 
-static int convert2utf8(unsigned char *buffer, const unsigned char* characters, size_t mbs_length, char* encode)
+static int uc32_to_utf8(unsigned int c, char* outbuf)
 {
+    int len = 0;
+    int first;
+    int i;
+
+    if (c < 0x80) {
+        first = 0;
+        len = 1;
+    }
+    else if (c < 0x800) {
+        first = 0xc0;
+        len = 2;
+    }
+    else if (c < 0x10000) {
+        first = 0xe0;
+        len = 3;
+    }
+    else if (c < 0x200000) {
+        first = 0xf0;
+        len = 4;
+    }
+    else if (c < 0x4000000) {
+        first = 0xf8;
+        len = 5;
+    }
+    else {
+        first = 0xfc;
+        len = 6;
+    }
+
+    if (outbuf) {
+        for (i = len - 1; i > 0; --i) {
+            outbuf[i] = (c & 0x3f) | 0x80;
+            c >>= 6;
+        }
+        outbuf[0] = c | first;
+    }
+
+    return len;
+}
+
+static int convert2utf8(PLOGFONT logfont, char *buffer,
+        const unsigned char* mbs, size_t mbs_len)
+{
+    int i, converted, ucs_len;
+    unsigned int wcs[256];
+
+    assert(logfont);
+
     ENTER();
-    int conved_mbs_len, ucs_len;
-    char buffer2[1024];
 
-    //PLOGFONT logfont = CreateLogFont (NULL, "arial", "gb2312",
-    PLOGFONT logfont = CreateLogFont (NULL, "arial", encode,
-            FONT_WEIGHT_REGULAR, FONT_SLANT_ROMAN, FONT_SETWIDTH_NORMAL,
-            FONT_SPACING_CHARCELL, FONT_UNDERLINE_NONE, FONT_STRUCKOUT_NONE,
-            12, 0);
-    assert(logfont);
+    ucs_len = MBS2WCSEx (logfont, wcs, TRUE,
+                mbs, mbs_len, sizeof(wcs), &converted);
 
-    const unsigned char* source = characters;
-    ucs_len = MBS2WCSEx (logfont, (void *)buffer2, FALSE,  source, mbs_length, sizeof(buffer2),  &conved_mbs_len);
-    DestroyLogFont(logfont);
+    for (i = 0; i < ucs_len; i++) {
+        int n = uc32_to_utf8 (wcs[i], buffer);
+        buffer += n;
+    }
+    *buffer = '\0';
 
-    logfont = CreateLogFont (NULL, "arial", "utf8",
-            FONT_WEIGHT_REGULAR, FONT_SLANT_ROMAN, FONT_SETWIDTH_NORMAL,
-            FONT_SPACING_CHARCELL, FONT_UNDERLINE_NONE, FONT_STRUCKOUT_NONE,
-            12, 0);
-    assert(logfont);
-
-    ucs_len = WCS2MBSEx (logfont, (unsigned char *)buffer,   (unsigned char *)buffer2,
-            ucs_len, FALSE, sizeof(buffer2),  &conved_mbs_len);
-
-    DestroyLogFont(logfont);
     LEAVE();
     return ucs_len;
 }
@@ -177,12 +211,12 @@ static void send_imeword_to_target(SOFTKBD_DATA* pdata, char *word, int len)
             //printf("IME_LANGUAGE_ZHTW\n");
             if(pdata->ime_status_encode == IME_ENCODING_LOCAL) {
                 send_ch_string(pdata->target_hwnd, word, len);
-            } else if(pdata->ime_status_encode == IME_ENCODING_UTF8) {
+            }
+            else if(pdata->ime_status_encode == IME_ENCODING_UTF8) {
                 //printf("IME_ENCODING_UTF8\n");
-                unsigned char buffer[1024];
-                char* encoding = "big5";
-                len =  convert2utf8(buffer, (unsigned char *)word, len, encoding);
-                //word = (char *)buffer;
+                char buffer[1024];
+                len = convert2utf8(pdata->keyboard->view_window->view_font,
+                    buffer, (unsigned char *)word, len);
                 send_utf8_string(pdata->target_hwnd, (char*)buffer, len);
             }
             break;
@@ -191,15 +225,16 @@ static void send_imeword_to_target(SOFTKBD_DATA* pdata, char *word, int len)
             if(pdata->ime_status_encode == IME_ENCODING_LOCAL) {
                 //printf("IME_ENCODING_LOCAL\n");
                 send_ch_string(pdata->target_hwnd, word, len);
-            } else if(pdata->ime_status_encode == IME_ENCODING_UTF8) {
+            }
+            else if(pdata->ime_status_encode == IME_ENCODING_UTF8) {
                 //printf("IME_ENCODING_UTF8\n");
-                unsigned char buffer[1024];
-                char* encoding = "gb2312";
-                len =  convert2utf8(buffer, (unsigned char *)word, len, encoding);
-                word = (char *)buffer;
-                send_utf8_string(pdata->target_hwnd, word, len);
+                char buffer[1024];
+                len = convert2utf8(pdata->keyboard->view_window->view_font,
+                    buffer, (unsigned char *)word, len);
+                send_utf8_string(pdata->target_hwnd, buffer, len);
             }
             break;
+
         default:
             assert(0);
     }
@@ -448,6 +483,7 @@ static LRESULT SoftKeyWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
             _MY_PRINTF("Soft Key Window init failed\n");
             return -1;
         }
+
 #ifdef KBD_TOOLTIP
         pdata->tooltip_win = CreateToolTip(hWnd);
 #endif
