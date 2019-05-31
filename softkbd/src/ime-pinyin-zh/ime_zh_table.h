@@ -26,11 +26,6 @@ typedef struct _IME_ZH_ITEM {
     unsigned short freq;
 } IME_ZH_ITEM;
 
-typedef struct _IME_ZH_WORD_OFF {
-    unsigned int off_begin;
-    unsigned int off_end;
-} IME_ZH_WORD_OFF;
-
 typedef struct {
     const char* ename;
     const char* encoding;
@@ -45,7 +40,7 @@ typedef struct {
     int nr_associated;
 
     const IME_ZH_ITEM *items;
-    const IME_ZH_WORD_OFF *word_offsets;
+    const unsigned int *word_offsets;
     const unsigned char* words;
     const unsigned short* associated;
 

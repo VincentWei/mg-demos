@@ -63,13 +63,19 @@ static void output_items(NCS_PINYIN_IME_TABLE *pinyin_dict, iconv_t ic)
 static void output_words(NCS_PINYIN_IME_TABLE *pinyin_dict, iconv_t ic)
 {
     int i;
-    NCS_PINYIN_PHOFFSET* pff = (NCS_PINYIN_PHOFFSET*)pinyin_dict->wordFile;
+    unsigned int* offsets = (unsigned int*)pinyin_dict->wordFile;
 
-    printf("static const IME_ZH_WORD_OFF word_offsets[] = {\n");
+    offsets++;
+    printf("static const unsigned int word_offsets[] = {\n");
     for (i = 0; i < pinyin_dict->wordNum; i++) {
-        printf("    {0x%08x, 0x%08x},\n",
-                pff[i].off_begin, pff[i].off_end);
+        if ((i % 8) == 0)
+            printf("   ");
+        printf(" 0x%08x,", offsets[i]);
+        if (((i + 1) % 8) == 0)
+            printf("\n");
     }
+    if (i % 8)
+        printf("\n");
     printf("};\n");
     printf("\n");
 

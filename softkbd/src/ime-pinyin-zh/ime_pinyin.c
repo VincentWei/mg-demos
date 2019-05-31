@@ -103,12 +103,13 @@ static void load_phrase (int phrno, char *tt)
     unsigned int ofs[2];
     int len;
 
-    ofs[0] = cur_table->word_offsets[phrno].off_begin;
-    ofs[1] = cur_table->word_offsets[phrno].off_end;
+    ofs[0] = cur_table->word_offsets[phrno];
+    ofs[1] = cur_table->word_offsets[phrno + 1];
 
     len = ofs[1] - ofs[0];
     if (len > 128 || len <= 0 ) {
-        strcpy (tt, "error");
+        _WRN_PRINTF("len for phrase number %d: %d", phrno, len);
+        strcpy (tt, "err");
         return;
     }
 
@@ -257,7 +258,7 @@ int pinyin_predict_word(void *method, const char* lookfor,
         char* buffer, int buffer_len, int index)
 {
     int    lenth = 0;
-    static char lookfor_bk[4];
+    static char lookfor_bk[64];
 
     lenth =0;
     sprintf (lookfor_bk, "%s", lookfor);

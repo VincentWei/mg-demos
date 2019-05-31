@@ -15,15 +15,15 @@ typedef struct {
 }NCS_PINYIN_ITEM;
 
 typedef struct {
-    unsigned int off_begin; //begin offset
-    unsigned int off_end;   //end offset
+    unsigned int off_begin;
+    unsigned int off_end;
 }NCS_PINYIN_PHOFFSET;
 
 typedef struct {
     char magic_number[sizeof(PINYIN_MAGIC_NUMBER)];
-    char ename[PINYIN_ENAME_LENGTH];                  //ascii name
-    char cname[PINYIN_CNAME_LENGTH];                  //promt
-    char selkey[PINYIN_SELECT_KEY_LENGTH];            //select keys
+    char ename[PINYIN_ENAME_LENGTH];
+    char cname[PINYIN_CNAME_LENGTH];
+    char selkey[PINYIN_SELECT_KEY_LENGTH];
 
     char last_full;
     int  totalKey;

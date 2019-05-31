@@ -129,48 +129,81 @@ static int convert2utf8(PLOGFONT logfont, char *buffer,
     return ucs_len;
 }
 
-static void send_utf8_string(HWND target_hwnd, char* str, int len)
+static int utf8_len_first_char (const char* mstr, int len)
+{
+    int t, c = *((const unsigned char *)(mstr++));
+
+    if (c & 0x80) {
+        int n = 1, ch_len = 0;
+        while (c & (0x80 >> n))
+            n++;
+
+        if (n > len)
+            return 0;
+
+        ch_len = n;
+        while (--n > 0) {
+            t = *((const unsigned char *)(mstr++));
+
+            if ((!(t & 0x80)) || (t & 0x40))
+                return 0;
+        }
+
+        return ch_len;
+    }
+
+    /* for ascii character */
+    return 1;
+}
+
+static void send_utf8_string(HWND target_hwnd, const char* str, int nr_ucs)
 {
     ENTER();
-    int i = 0;
-    while(i<len) {
+
+    _WRN_PRINTF("utf8 string: %s, %d", str, nr_ucs);
+
+    int len = strlen(str);
+    while (len > 0) {
         WPARAM wParam;
         LPARAM lParam = 0;
-        //Process UTF8 flow
-        if(((Uint8)str[i]) <= 0x7F) {//ascii code
-            wParam = (WPARAM)str[i];
-            i++;
-        } else if(((Uint8)str[i]) <= 0xBF) {
-            i ++;
-            continue;
-        } else if(((Uint8)str[i]) <= 0xDF) { //2 code
-            wParam = ((Uint8) str[i])|(((Uint8)str[i+1])<<8);
-            i += 2;
-        } else if(((Uint8)str[i]) <= 0xEF) { //three code
-            wParam = ((Uint8)str[i]) | (((Uint8)str[i+1])<<8) | (((Uint8)str[i+2])<<16);
-            i += 3;
-        } else if(((Uint8)str[i]) <= 0xF7) { //four code
-            wParam = ((Uint8)str[i]) | (((Uint8)str[i+1])<<8) | (((Uint8)str[i+2])<<16)| (((Uint8)str[i+3])<<24);
-            i += 4;
-        } else if(((Uint8)str[i]) <= 0xFB) { //five code
-            wParam = ((Uint8)str[i]) | (((Uint8)str[i+1])<<8) | (((Uint8)str[i+2])<<16)| (((Uint8)str[i+3])<<24);
-            lParam = ((Uint8)str[i+4]);
-            i += 5;
-        } else if(((Uint8)str[i]) <= 0xFD) { //six code
-            wParam = ((Uint8)str[i]) | (((Uint8)str[i+1])<<8) | (((Uint8)str[i+2])<<16)| (((Uint8)str[i+3])<<24);
-            lParam = ((Uint8)str[i+4]) | (((Uint8)str[i+5])<<8);
-            i += 6;
-        } else {
-            i ++;
-            continue;
+
+        int ch_len = utf8_len_first_char (str, len);
+        switch (ch_len) {
+        case 1:
+            wParam = (WPARAM)str[0];
+            break;
+        case 2:
+            wParam = ((Uint8)str[0]) | (((Uint8)str[1])<<8);
+            break;
+        case 3:
+            wParam = ((Uint8)str[0]) | (((Uint8)str[0+1])<<8) | (((Uint8)str[0+2])<<16);
+            break;
+        case 4:
+            wParam = ((Uint8)str[0]) | (((Uint8)str[0+1])<<8) | (((Uint8)str[0+2])<<16)| (((Uint8)str[0+3])<<24);
+            break;
+        case 5:
+            wParam = ((Uint8)str[0]) | (((Uint8)str[0+1])<<8) | (((Uint8)str[0+2])<<16)| (((Uint8)str[0+3])<<24);
+            lParam = ((Uint8)str[0+4]);
+            break;
+        case 6:
+            wParam = ((Uint8)str[0]) | (((Uint8)str[0+1])<<8) | (((Uint8)str[0+2])<<16)| (((Uint8)str[0+3])<<24);
+            lParam = ((Uint8)str[0+4]) | (((Uint8)str[0+5])<<8);
+            break;
+        default:
+            return;
         }
+
 #if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 1) && !defined(_STAND_ALONE)
         Send2ActiveWindow(mgTopmostLayer, MSG_CHAR, wParam, lParam);
 #elif defined(_MGRM_THREADS) && !defined(_STAND_ALONE)
         PostMessage(target_hwnd, MSG_CHAR, wParam, lParam);
 #endif
-        LEAVE();
+
+        str += ch_len;
+        len -= ch_len;
     }
+
+    LEAVE();
 }
 
 //send 2-Byte-coded chinese character to target window
