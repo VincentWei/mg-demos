@@ -78,6 +78,9 @@ To run a demo:
 
 The configure script provides the following options:
 
+    # Whether display tooltip window for soft keyboard:
+    --enable-tooltip
+
     # with or without animation for soft keyboard:
     --enable-animate
 
