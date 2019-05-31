@@ -7,7 +7,7 @@ which is developed by [Joobot Technologies].
 
 1. Use the framework derived from mGUXDemo (`common/`) to support
 animated activities and list view.
-1. Using GNU gettext for localization.
+1. Using GNU gettext .mo files for localization.
 1. Different input methods with touch panel:
    * Screen locker with digital password.
    * A soft keyboard to input Latin letters, digits, and symbol characters.
