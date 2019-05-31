@@ -108,7 +108,6 @@ static void load_phrase (int phrno, char *tt)
 
     len = ofs[1] - ofs[0];
     if (len > 128 || len <= 0 ) {
-        _WRN_PRINTF("len for phrase number %d: %d", phrno, len);
         strcpy (tt, "err");
         return;
     }

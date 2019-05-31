@@ -46,9 +46,15 @@
 #include "animate/common_animates.h"
 #endif
 
+#ifdef DEBUG
 #define ENTER() printf(">>>   enter %s\n", __FUNCTION__);
 #define LEAVE() printf("<<<   leave %s\n", __FUNCTION__);
 #define dbg() printf("%s %d\n", __FUNCTION__, __LINE__)
+#else
+#define ENTER()
+#define LEAVE()
+#define dbg()
+#endif
 
 #define MSG_IME_USER_SENDCHAR   8000
 
@@ -159,8 +165,6 @@ static int utf8_len_first_char (const char* mstr, int len)
 static void send_utf8_string(HWND target_hwnd, const char* str, int nr_ucs)
 {
     ENTER();
-
-    _WRN_PRINTF("utf8 string: %s, %d", str, nr_ucs);
 
     int len = strlen(str);
     while (len > 0) {
