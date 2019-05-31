@@ -181,7 +181,7 @@ static const unsigned int mask[]=
 
 
 /* After add/delete a char, search the matched char/phrase, update the
-   start_key/end_key key,  save the related keys at first, if no match
+   start_key/end_key key, save the related keys at first, if no match
    is found, we may restore its original value
 */
 static void find_matched_key (void)
@@ -204,7 +204,7 @@ static void find_matched_key (void)
 
     end_key = cur_table->key_indices[input_key[0]+1];
 
-    for (; start_key <end_key; start_key++) {
+    for (; start_key < end_key; start_key++) {
         key1 = (cur_table->items[start_key].key1 & mask[input_count+5]);
         key2 = (cur_table->items[start_key].key2 & mask[input_count]);
 
@@ -278,10 +278,10 @@ int pinyin_predict_word(void *method, const char* lookfor,
         strcat (buffer, " ");
         index++;
     }
+
     return -1;
-
-
 }
+
 static void fill_matched_chars (int j)
 {
     int selected_number = 0, current_length = 0;
@@ -341,13 +341,12 @@ static BOOL char_match_exist (const char *match)
     int idex = 0;
     int key = 0;
 
-    bzero (input_key, sizeof (long)*input_count);
+    bzero (input_key, sizeof (unsigned int)*input_count);
     find_matched_key ();
     clear_input();
 
-    for (idex=0; idex<len; idex++)
-    {
-       key =(char)(cur_table->key_map[(int)(*(match+idex))]);
+    for (idex = 0; idex < len; idex++) {
+       key = cur_table->key_map[(int)match[idex]];
        input_key[input_count++] = key;
     }
 
@@ -359,9 +358,8 @@ static BOOL char_match_exist (const char *match)
     if (end_key== 0) {
         return FALSE;
     }
-    else {
-        return TRUE;
-    }
+
+    return TRUE;
 }
 
 int pinyin_translate_word(void *method, const char *strokes,
@@ -374,7 +372,7 @@ int pinyin_translate_word(void *method, const char *strokes,
     int         lensum;
     int         len;
 
-    if(index < 0)
+    if (index < 0)
         return -1;
 
     len = strlen(strokes);
@@ -386,15 +384,15 @@ int pinyin_translate_word(void *method, const char *strokes,
         clear_input ();
 
         for (idex = 0; idex<length && idex < MAX_INPUT_LENGTH ; idex++) {
-            key = cur_table->key_map[(int)(*(strokes+idex))];
+            key = cur_table->key_map[(int)strokes[idex]];
             input_key [input_count++] = key;
         }
 
-        find_matched_key ();
+        find_matched_key();
         curr_page_idx = start_key;
-        multi_page_mode    = 1;
+        multi_page_mode = 1;
         fill_matched_chars(start_key);
-        if (input_matched<input_count)
+        if (input_matched < input_count)
                return -1;
     }
 

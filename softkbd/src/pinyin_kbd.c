@@ -99,7 +99,7 @@ static void sw_update(stroke_window_t* sw, HWND hWnd)
         hdc = GetDC(hWnd);
 
         SetBkMode(hdc, BM_TRANSPARENT);
-        old_tecolor = SetTextColor(hdc, RGB2Pixel(hdc, 155, 50, 155));
+        old_tecolor = SetTextColor(hdc, PIXEL_lightwhite);
         old_font = SelectFont(hdc, sw->stroke_font);
         DrawText(hdc, sw->str, -1, &(sw->bound), DT_LEFT);
         SelectFont(hdc, old_font);
@@ -134,7 +134,7 @@ static void vw_update(view_window_t *vw, HWND hWnd, vw_element_t* element)
             for (i=0; i<vw->element_num; i++) {
 #ifndef __FILL_DIRECT__
                 SetTextColor(hdc, RGB2Pixel(hdc, 190, 190, 190));
-                DrawText(hdc, element[i].string, -1, &element[i].bound, 0);
+                DrawText(hdc, element[i].string, -1, &element[i].bound, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
 
                 rc = element[i].bound;
                 rc.top --;
@@ -142,31 +142,21 @@ static void vw_update(view_window_t *vw, HWND hWnd, vw_element_t* element)
                 rc.left --;
                 rc.right --;
                 SetTextColor(hdc, RGB2Pixel(hdc, 155, 50, 155));
-                DrawText(hdc, element[i].string, -1, &rc, 0);
+                DrawText(hdc, element[i].string, -1, &rc, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 #else
-                DrawText(hdc, element[i].string, -1, &element[i].bound, 0);
+                SetTextColor(hdc, RGB2Pixel(hdc, 155, 50, 155));
+                DrawText(hdc, element[i].string, -1, &element[i].bound, DT_SINGLELINE | DT_LEFT | DT_VCENTER | DT_NOCLIP);
 #endif
             }
         } else {
             if(vw->style & VW_EL_PRESSED) {
-                if (vw->data)
 #ifdef __FILL_DIRECT__
-    #if 0
-                    FillBoxWithBitmap(hdc,element->bound.left,
-                            element->bound.top,
-                            element->bound.right - element->bound.left,
-                            element->bound.bottom - element->bound.top,
-                            &(VIEWWIN_DATA_PTR(vw)->sel_bk) );
-    #else
-                //SetBrushColor(hdc, RGB2Pixel(hdc, 120, 187, 250));
                 SetBrushColor(hdc, RGB2Pixel(hdc, 61, 89, 160));
                 FillBox(hdc,element->bound.left, element->bound.top,
                             element->bound.right - element->bound.left,
                             element->bound.bottom - element->bound.top);
-    #endif
-                //SetTextColor(hdc, COLOR_lightwhite);
-                SetTextColor(hdc, RGB2Pixel(hdc, 155, 50, 155));
-                DrawText(hdc, element->string, -1, &element->bound, 0);
+                SetTextColor(hdc, COLOR_lightwhite);
+                DrawText(hdc, element->string, -1, &element->bound, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 #else
                 rc = element->bound;
                 rc.top --;
@@ -177,7 +167,7 @@ static void vw_update(view_window_t *vw, HWND hWnd, vw_element_t* element)
                 rc.bottom ++;
                 rc.right ++;
                 SetTextColor(hdc, RGB2Pixel(hdc, 100, 50, 100));
-                DrawText(hdc, element->string, -1, &rc, 0);
+                DrawText(hdc, element->string, -1, &rc, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 #endif
             } else {
                 EraseBbGround(hWnd, &vw->bound);
@@ -318,10 +308,10 @@ int pinyin_proceed_msg(key_board_t* key_board, HWND hwnd,
 
 static int init_py_view_window (HWND hWnd, view_window_t *vw)
 {
-    vw->bound.left          = SKB_VW_L   ;
-    vw->bound.top           = SKB_VW_T + 2;
-    vw->bound.right         = SKB_VW_R   ;
-    vw->bound.bottom        = SKB_VW_B   ;
+    vw->bound.left          = SKB_VW_L;
+    vw->bound.top           = SKB_VW_T;
+    vw->bound.right         = SKB_VW_R;
+    vw->bound.bottom        = SKB_VW_B;
 
     vw->key_pg_up.left      = SKB_VW_PU_L;
     vw->key_pg_up.top       = SKB_VW_PU_T;
@@ -346,7 +336,7 @@ static int init_py_view_window (HWND hWnd, view_window_t *vw)
     vw->clear_elements = vw_clear_elements;
     vw->get_element = vw_get_element;
 
-    vw->view_font = CreateLogFontByName ("ttf-fixed-rrncnn-*-12-GB2312");
+    vw->view_font = CreateLogFontByName ("ttf-fixed-srncnn-*-16-GB2312");
 
     if (NULL == vw->view_font){
         _MY_PRINTF("create logfont for view window error.\n");

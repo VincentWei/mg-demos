@@ -121,8 +121,27 @@ static void output_table(NCS_PINYIN_IME_TABLE *pinyin_dict)
     printf("IME_ZH_TABLE _ime_zh_tab_pinyin = {\n");
     printf("    \"Pinyin\",\n");
     printf("    \"GB2312\",\n");
-    printf("    \"%s\",\n", pinyin_dict->keyMap);
-    printf("    \"%s\",\n", pinyin_dict->keyName);
+
+    printf("    {\n");
+    for (i = 0; i < 128; i++) {
+        if ((i % 8) == 0)
+            printf("       ");
+        printf(" 0x%02x,", pinyin_dict->keyMap[i]);
+        if (((i + 1) % 8) == 0)
+            printf("\n");
+    }
+    printf("    },\n");
+
+    printf("    {\n");
+    for (i = 0; i < 64; i++) {
+        if ((i % 8) == 0)
+            printf("       ");
+        printf(" 0x%02x,", pinyin_dict->keyName[i]);
+        if (((i + 1) % 8) == 0)
+            printf("\n");
+    }
+    printf("    },\n");
+
     printf("    {\n");
     for (i = 0; i < 64; i++) {
         if ((i % 8) == 0)
@@ -132,6 +151,7 @@ static void output_table(NCS_PINYIN_IME_TABLE *pinyin_dict)
             printf("\n");
     }
     printf("    },\n");
+
     printf("    %d,\n", pinyin_dict->totalKey);
     printf("    %d,\n", pinyin_dict->totalChar);
     printf("    %d,\n", pinyin_dict->wordNum);

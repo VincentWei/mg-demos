@@ -162,28 +162,16 @@ static void vw_update(view_window_t *vw, HWND hWnd, vw_element_t* element)
                 SetTextColor(hdc, RGB2Pixel(hdc, 155, 50, 155));
                 DrawText(hdc, element[i].string, -1, &rc, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 #else
-                //printf("element[i].string=%s\n", element[i].string);
-                //printf("element[i].bound:l=%d,t=%d,r=%d,b=%d\n", element[i].bound.left,
-                //    element[i].bound.top, element[i].bound.right, element[i].bound.bottom);
                 DrawText(hdc, element[i].string, -1, &element[i].bound, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 #endif
             }
         } else {
             if(vw->style & VW_EL_PRESSED) {
 #ifdef __FILL_DIRECT__
-    #if 0
-                    FillBoxWithBitmap(hdc,element->bound.left,
-                            element->bound.top,
-                            element->bound.right - element->bound.left,
-                            element->bound.bottom - element->bound.top,
-                            &(VIEWWIN_DATA_PTR(vw)->sel_bk) );
-    #else
-                //SetBrushColor(hdc, RGB2Pixel(hdc, 120, 187, 255));
                 SetBrushColor(hdc, RGB2Pixel(hdc, 61, 89, 160));
                 FillBox(hdc,element->bound.left, element->bound.top,
                             element->bound.right - element->bound.left,
                             element->bound.bottom - element->bound.top);
-    #endif
                 SetTextColor(hdc, COLOR_lightwhite);
                 DrawText(hdc, element->string, -1, &element->bound, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
 #else
@@ -391,7 +379,7 @@ static int init_en_view_window(HWND hWnd, view_window_t *vw)
     vw->clear_elements  = vw_clear_elements;
     vw->get_element     = vw_get_element;
 
-    vw->view_font = CreateLogFontByName ("ttf-fixed-rrncnn-*-14-ISO8859-1");
+    vw->view_font = CreateLogFontByName ("ttf-fixed-rrncnn-*-16-ISO8859-1");
     if (NULL == vw->view_font){
         _MY_PRINTF("create logfont for view window error.\n");
         return -1;
