@@ -76,8 +76,6 @@ typedef struct {
    short l, t, r, b;
 } hit_addr;
 
-void __mg_ime_writemsg (BYTE* buffer, int len, LPARAM lParam, BOOL bDByte);
-void __mg_ime_outchar (unsigned char ch, LPARAM lParam);
 extern int pinyin_match_keystokes (void *method, const char* keystokes, char* buff, int buffer_len, int cursor);
 extern int pinyin_translate_word(void *method, const char *strokes, char *buffer, int buffer_len, int index);
 extern int pinyin_predict_pord(void *method, const char *lookfor, char * buffer, int buffer_len, int index);
