@@ -39,7 +39,7 @@
 extern "C" {
 #endif  /* __cplusplus */
 
-HWND skbCreateSoftKeyboard(void (*cb)(BOOL IsShown));
+HWND skbCreateSoftKeyboard(HWND hosting, int margin_bottom);
 
 #ifdef __cplusplus
 }

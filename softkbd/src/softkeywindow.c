@@ -37,10 +37,6 @@
 #include "softkeywindow.h"
 #include "tooltip.h"
 
-#define HEIGHT_TASKBAR  40
-
-//#define _MGI_IS_ONLY_INPUT_DEV
-
 #if KBD_ANIMATE
 #include "animate/animate.h"
 #include "animate/common_animates.h"
@@ -58,9 +54,9 @@
 
 #define MSG_IME_USER_SENDCHAR   8000
 
-static void (*op_cb)(BOOL) = NULL;
 static key_board_t* keyboard [SFKB_NUM];
 static BOOL active = TRUE;
+static int HEIGHT_TASKBAR;
 
 /*ime status table*/
 static int status_table [4][4] = {
@@ -366,7 +362,7 @@ static void show_ime_window(HWND hWnd, SOFTKBD_DATA* pdata, BOOL show, WPARAM wP
 #if KBD_ANIMATE
     int x, y;
     x = (RECTW(g_rcDesktop) - SKB_WIN_W)/2;
-    y = RECTH(g_rcDesktop)-HEIGHT_TASKBAR;
+    y = RECTH(g_rcDesktop) - HEIGHT_TASKBAR;
     if (show) {
         SetInterval(50);
         MoveWindow(hWnd, x, y-1, SKB_WIN_W, SKB_WIN_H, FALSE);
@@ -386,8 +382,6 @@ static void show_ime_window(HWND hWnd, SOFTKBD_DATA* pdata, BOOL show, WPARAM wP
 #else
     ShowWindow(hWnd, show?SW_SHOW: SW_HIDE);
     pdata->is_opened = show;
-    if (op_cb)
-        op_cb(pdata->is_opened);
 #endif
 }
 
@@ -688,14 +682,7 @@ void mgiEnableSoftKeypad(BOOL e)
    active = e;
 }
 
-#ifdef _MGRM_PROCESSES
-HWND skbCreateSoftKeyboard(void (*cb)(BOOL IsShown))
-{
-   op_cb = cb;
-   return create_ime_win(HWND_DESKTOP);
-}
-
-#else
+#ifdef _MGRM_THREADS
 
 typedef struct ime_info {
     sem_t wait;
@@ -727,14 +714,14 @@ static void* start_ime(void* data)
 static pthread_t imethread;
 
 /* the argument of 'hosting' is ignored. */
-HWND skbCreateSoftKeyboard(void (*cb)(BOOL IsShown))
+HWND skbCreateSoftKeyboard(HWND hosting, int margin_bottom)
 {
-    op_cb = cb;
     IME_INFO ime_info;
     pthread_attr_t new_attr;
 
-    sem_init(&ime_info.wait, 0, 0);
+    HEIGHT_TASKBAR = margin_bottom;
 
+    sem_init(&ime_info.wait, 0, 0);
     pthread_attr_init(&new_attr);
     pthread_attr_setdetachstate(&new_attr, PTHREAD_CREATE_DETACHED);
     pthread_create(&imethread, &new_attr, start_ime, &ime_info);
@@ -746,4 +733,12 @@ HWND skbCreateSoftKeyboard(void (*cb)(BOOL IsShown))
     return ime_info.hwnd;
 }
 
-#endif
+#else /* _MGRM_THREADS */
+
+HWND skbCreateSoftKeyboard(HWND hosting, int margin_bottom)
+{
+    HEIGHT_TASKBAR = margin_bottom;
+    return create_ime_win(hosting);
+}
+
+#endif /* !_MGRM_THREADS */

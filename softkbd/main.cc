@@ -197,7 +197,7 @@ int main (int argc, const char* argv[])
     SET_GLOBAL_HOSTING (widgetStatusBar->hwnd);
     mGEffInit ();
 
-    skbCreateSoftKeyboard(NULL);
+    skbCreateSoftKeyboard(widgetStatusBar->hwnd, 0);
 
     /* It's time to show the status bar and launcher the first activity */
     ShowWindow (widgetStatusBar->hwnd, SW_SHOW);
