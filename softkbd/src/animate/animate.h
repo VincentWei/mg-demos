@@ -22,6 +22,8 @@
 #include <minigui/common.h>
 #include <minigui/fixedmath.h>
 
+#include <pthread.h>
+
 #include "p-code.h"
 
 #ifdef __cplusplus

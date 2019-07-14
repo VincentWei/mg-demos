@@ -193,9 +193,9 @@ static void send_utf8_string(HWND target_hwnd, const char* str, int nr_ucs)
             return;
         }
 
-#if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 1) && !defined(_STAND_ALONE)
+#if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 3)
         Send2ActiveWindow(mgTopmostLayer, MSG_CHAR, wParam, lParam);
-#elif defined(_MGRM_THREADS) && !defined(_STAND_ALONE)
+#else
         PostMessage(target_hwnd, MSG_CHAR, wParam, lParam);
 #endif
 
@@ -214,11 +214,10 @@ static void send_ch_string(HWND target_hwnd, char* word, int len)
     for (i=0; i<len; i += 2) {
         WORD wDByte;
         wDByte = MAKEWORD(word[i], word[i + 1]);
-#if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 1) && !defined(_STAND_ALONE)
+#if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 3)
         Send2ActiveWindow(mgTopmostLayer, MSG_CHAR, wDByte, 0);
-#elif defined(_MGRM_THREADS) && !defined(_STAND_ALONE)
+#else
         PostMessage(target_hwnd, MSG_CHAR, wDByte, 0);
-        printf("wDByte = %x\n", wDByte);
 #endif
     }
     //LEAVE();
@@ -233,9 +232,9 @@ static void send_imeword_to_target(SOFTKBD_DATA* pdata, char *word, int len)
     switch(pdata->ime_status_language) {
         case IME_LANGUAGE_LATIN:
             for (i=0; i<len; i++) {
-#if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 1) && !defined(_STAND_ALONE)
+#if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 3)
                 Send2ActiveWindow(mgTopmostLayer, MSG_CHAR, word[i], 0);
-#elif defined(_MGRM_THREADS) && !defined(_STAND_ALONE)
+#else
                 PostMessage(pdata->target_hwnd, MSG_CHAR, word[i], 0);
 #endif
             }
@@ -523,9 +522,9 @@ static LRESULT SoftKeyWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
     }
     case MSG_KEYDOWN:
     case MSG_KEYUP:
-#if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 1) && !defined(_STAND_ALONE)
+#if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 3)
         Send2ActiveWindow (mgTopmostLayer, message, wParam, lParam);
-#elif defined(_MGRM_THREADS) && !defined(_STAND_ALONE)
+#else
         PostMessage(pdata->target_hwnd, message, wParam, lParam);
 #endif
        return 0;
@@ -592,12 +591,12 @@ static LRESULT SoftKeyWinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPa
             break;
 
         case AC_SEND_MSG:
-#if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 1) && !defined(_STAND_ALONE)
+#if defined(_MGRM_PROCESSES) && (MINIGUI_MAJOR_VERSION > 3)
             Send2ActiveWindow(mgTopmostLayer,
                 pdata->keyboard->action.message,
                 pdata->keyboard->action.wParam,
                 pdata->keyboard->action.lParam);
-#elif defined(_MGRM_THREADS) && !defined(_STAND_ALONE)
+#else
             PostMessage(pdata->target_hwnd,
                 pdata->keyboard->action.message,
                 pdata->keyboard->action.wParam,
