@@ -1278,8 +1278,8 @@ static NCS_MNWND_TEMPLATE _statusbar_templ = {
     0
 };
 
-
-int key_hook(void* context, HWND dst_wnd, UINT msg, WPARAM wparam, LPARAM lparam)
+#ifndef _MGRM_PROCESSES
+static int key_hook(void* context, HWND dst_wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     if (msg == MSG_KEYUP && wparam == SCANCODE_POWER && widgetStatusBar) {
         PostMessage(widgetStatusBar->hwnd, msg, wparam, lparam);
@@ -1288,6 +1288,7 @@ int key_hook(void* context, HWND dst_wnd, UINT msg, WPARAM wparam, LPARAM lparam
 
     return HOOK_GOON;
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
@@ -1298,10 +1299,10 @@ int main (int argc, const char* argv[])
         return 1;
     }
 
-    RegisterKeyMsgHook(NULL, key_hook);
-
 #ifdef _MGRM_PROCESSES
     JoinLayer(NAME_DEF_LAYER , "CBPlus", 0, 0);
+#else
+    RegisterKeyMsgHook(NULL, key_hook);
 #endif
 
     /* init mGNCS and mGNCS4Touch */
