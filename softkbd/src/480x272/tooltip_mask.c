@@ -1,3 +1,15 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//                          IMPORTANT NOTICE
+//
+// The following open source license statement does not apply to any
+// entity in the Exception List published by FMSoft.
+//
+// For more information, please visit:
+//
+// https://www.fmsoft.cn/exception-list
+//
+//////////////////////////////////////////////////////////////////////////////
 char	tooltip_mask_data[]	 = {
 0x42,	0x4d,	0x8c,	0x5,	0x0,	0x0,	
 0x0,	0x0,	0x0,	0x0,	0x4a,	0x0,	

@@ -1,3 +1,15 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//                          IMPORTANT NOTICE
+//
+// The following open source license statement does not apply to any
+// entity in the Exception List published by FMSoft.
+//
+// For more information, please visit:
+//
+// https://www.fmsoft.cn/exception-list
+//
+//////////////////////////////////////////////////////////////////////////////
 static unsigned char ime_tab[] = {
   0x43, 0x43, 0x45, 0x47, 0x42, 0x00, 0x50, 0x69,
   0x6e, 0x59, 0x69, 0x6e, 0x00, 0x00, 0x00, 0x00,
