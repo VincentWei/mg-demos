@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.60)
-AC_INIT(mg-demos,1.0.0)
+AC_INIT(mg-demos,1.0.1)
 AC_CONFIG_SRCDIR(cbplusui/main.cc)
 
 dnl ========================================================================
