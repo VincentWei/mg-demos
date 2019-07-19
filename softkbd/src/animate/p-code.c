@@ -183,7 +183,7 @@ static void reportInsError(int errcode, unsigned char* ins, intptr_t* stack, int
     stack --;
     for(i=1; i<=16 && stack>= stack_base; stack --, i++)
     {
-        fprintf(stderr,"\t%x", *stack);
+        fprintf(stderr,"\t%lx", (intptr_t)*stack);
         if(i%4==0)
             fprintf(stderr,"\n");
     }
