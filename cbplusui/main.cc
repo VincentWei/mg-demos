@@ -1373,7 +1373,11 @@ int main (int argc, const char* argv[])
     WNDCLASS wnd_class;
     wnd_class.spClassName = NCSCTRL_DIALOGBOX;
     wnd_class.opMask = COP_BKCOLOR;
+#ifdef _MGSCHEMA_COMPOSITING
+    wnd_class.dwBkColor = RGBA_black;
+#else
     wnd_class.iBkColor = PIXEL_black;
+#endif
     SetWindowClassInfo (&wnd_class);
 
     wnd_class.spClassName = NCSCTRL_MAINWND;
