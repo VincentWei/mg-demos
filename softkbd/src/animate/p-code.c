@@ -581,7 +581,7 @@ void * CreateMethod(int arg_counts)
     return pex;
 }
 
-inline unsigned char* get_ptr(pcode_method_ex_t* pex, int size)
+unsigned char* get_ptr(pcode_method_ex_t* pex, int size)
 {
     unsigned char* p = pex->method->codes + pex->method->code_len;
     if( (pex->method->code_len+size) > pex->buf){

@@ -723,7 +723,7 @@ static LRESULT mymain_onAsyncTaskFinished (mMainWnd* self, UINT msg, DWORD wpara
 
     switch (wparam) {
     case TASKID_MISC_START_MUC: {
-        _DBG_PRINTF ("CBPlusGUI>main: async task TASKID_MISC_START_MUC finished: %d\n", lparam);
+        _DBG_PRINTF ("CBPlusGUI>main: async task TASKID_MISC_START_MUC finished: %d\n", (int)lparam);
         act->m_started = true;
         break;
     }
@@ -735,7 +735,7 @@ static LRESULT mymain_onAsyncTaskFinished (mMainWnd* self, UINT msg, DWORD wpara
         break;
     }
     default:
-        _DBG_PRINTF ("CBPlusGUI>main: Unhandled async task: %d\n", wparam);
+        _DBG_PRINTF ("CBPlusGUI>main: Unhandled async task: %d\n", (int)wparam);
         break;
     }
 
