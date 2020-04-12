@@ -886,19 +886,19 @@ static LRESULT statusBar_onAsyncTaskFinished (mMainWnd* self, UINT msg, DWORD wp
         break;
     }
     case TASKID_SYSCONF_GETALL: {
-        _DBG_PRINTF ("CBPlusGUI>main: async task SYSCONF_GETALL finished: %x\n", lparam);
+        _DBG_PRINTF ("CBPlusGUI>main: async task SYSCONF_GETALL finished: %x\n", (int)lparam);
         break;
     }
     case TASKID_MISC_START_FUNC: {
-        _DBG_PRINTF ("CBPlusGUI>main: async task MISC_START_FUNC finished: %x\n", lparam);
+        _DBG_PRINTF ("CBPlusGUI>main: async task MISC_START_FUNC finished: %x\n", (int)lparam);
         break;
     }
     case TASKID_MISC_STOP_FUNC: {
-        _DBG_PRINTF ("CBPlusGUI>main: async task MISC_STOP_FUNC finished: %x\n", lparam);
+        _DBG_PRINTF ("CBPlusGUI>main: async task MISC_STOP_FUNC finished: %x\n", (int)lparam);
         break;
     }
     default:
-        _DBG_PRINTF ("CBPlusGUI>main: Unhandled async task: %d\n", wparam);
+        _DBG_PRINTF ("CBPlusGUI>main: Unhandled async task: %d\n", (int)wparam);
         break;
     }
 

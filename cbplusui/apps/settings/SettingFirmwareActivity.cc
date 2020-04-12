@@ -127,7 +127,7 @@ static LRESULT mymain_onAsyncTaskFinished (mMainWnd* self, UINT msg, DWORD wpara
 
         case TASKID_FIRMWARE_DOWNLOAD:
         case TASKID_FIRMWARE_UPGRADE:
-            _MG_PRINTF ("SettingFirmwareActivity: do nothing for task: %d.\n", wparam);
+            _MG_PRINTF ("SettingFirmwareActivity: do nothing for task: %d.\n", (int)wparam);
             return 0;
         }
     }

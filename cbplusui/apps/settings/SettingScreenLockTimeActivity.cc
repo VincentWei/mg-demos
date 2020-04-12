@@ -85,7 +85,7 @@ static BOOL mymain_onCommand (mMainWnd* self, int id, int nc, HWND hCtrl)
 
 static LRESULT mymain_onSwitchStateChanged (mMainWnd* self, UINT msg, DWORD wparam, DWORD lparam)
 {
-    _MG_PRINTF ("MSG_USER: item #%d switch %d\n", wparam, lparam);
+    _MG_PRINTF ("MSG_USER: item #%d switch %d\n", (int)wparam, (int)lparam);
     return 0;
 }
 
