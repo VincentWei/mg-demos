@@ -35,6 +35,8 @@
 .deps/
 .libs/
 .dirstamp
+\#
+am--include-marker
 /acinclude.m4
 /aclocal.m4
 /autom4te.cache
