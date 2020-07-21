@@ -52,6 +52,7 @@ https://github.com/VincentWei/mg-demos/tree/master/softkbd
   * mGNCS4Touch: V1.2.2 or later
   * 3rd-party libraries:
     * chipmunk-5.3.1
+    * librime-1.5.3(softkbd2)
 
 ## Building
 
@@ -80,10 +81,10 @@ The configure script provides the following options:
 
     # Whether display tooltip window for soft keyboard:
     --enable-tooltip
-
+    
     # with or without animation for soft keyboard:
     --enable-animate
-
+    
     # specify the size of soft keyboard:
     --with-softkbdsize=480x272/320x240/240x320
 
@@ -93,6 +94,7 @@ The configure script provides the following options:
 * `res/`: Common resource files used by all demos.
 * `cbplusui/`: The demo of CBPlusUI.
 * `softkbd/`: The demo of SoftKBD.
+* `softkbd2/`: Another demo of SoftKBD that use librime as backend.
 
 ## Copying
 
