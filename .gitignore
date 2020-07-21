@@ -53,4 +53,6 @@ Makefile.in
 
 cbplusui/cbplusui
 softkbd/softkbd
-
+softkbd2/softkbd
+softkbd2/data/cangjie5.userdb/
+softkbd2/data/luna_pinyin.userdb/
