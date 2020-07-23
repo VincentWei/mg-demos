@@ -31,7 +31,7 @@ AC_HEADER_SYS_WAIT
 AC_HEADER_TIME
 AC_CHECK_HEADERS(sys/time.h unistd.h)
 
-devel_mode="yes"
+devel_mode="no"
 AC_ARG_ENABLE(develmode,
 [  --enable-develmode       developer mode <default=yes>],
 devel_mode=$enableval)
