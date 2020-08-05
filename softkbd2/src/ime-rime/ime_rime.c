@@ -32,6 +32,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <rime_api.h>
 
 #include <minigui/common.h>
 #include <minigui/minigui.h>
@@ -40,9 +41,8 @@
 #include <minigui/control.h>
 
 #include "ime_rime.h"
-#include "rime_api.h"
 
-// static RimeSessionId session_id;
+static RimeSessionId session_id;
 // static RimeApi *rime = NULL;
 static RimeTraits traits;
 static RimeCommit commit;
@@ -96,14 +96,14 @@ BOOL ime_rime_init(void)
   if (rime->start_maintenance(full_check))
     rime->join_maintenance_thread();
   fprintf(stderr, "IME_Rime Ready.\n");
-  RimeSessionId session_id;
+  // RimeSessionId session_id;
   session_id = rime->create_session();
   if (!session_id)
   {
     fprintf(stderr, "Error creating rime session.\n");
     return FALSE;
   }
-  rime->destroy_session(session_id);
+  // rime->destroy_session(session_id);
   printf("成功rime\n");
   return TRUE;
 }
@@ -122,7 +122,7 @@ int rime_translate_word(void *method, const char *keystokes,
                         char *buff, int buff_len, int index)
 {
   RimeApi *rime = rime_get_api();
-  RimeSessionId session_id;
+  // RimeSessionId session_id;
   //可能是长度限制，需要修改一下len(w中)
   //TODO 翻页等功能
   //index 表示当前页面号(多页功能)
@@ -146,8 +146,8 @@ int rime_translate_word(void *method, const char *keystokes,
   // }
   //memset(buff, 0, buff_len);//无效
   buff[0] = 0; //有效避免重复;务必！！！！！
-  session_id = rime->create_session();
-  // rime->simulate_key_sequence(session_id, "1");
+  // session_id = rime->create_session();
+  rime->commit_composition(session_id);
   rime->simulate_key_sequence(session_id, stokes);
 
   // rime->get_context(session_id, &context);
@@ -173,7 +173,7 @@ int rime_translate_word(void *method, const char *keystokes,
     {
       strcat(buff, context.menu.candidates[candidate_cnt].text);
       // // printf("sim %s\n", context.menu.candidates[candidate_cnt].text);
-      strcat(buff, " ");
+      strcat(buff, "  ");
       lens += 1;
       if (lens >= Page_size)
       {
@@ -182,14 +182,13 @@ int rime_translate_word(void *method, const char *keystokes,
       rime->simulate_key_sequence(session_id, ".");
     }
   }
-  // printf("%d\n", session_id);
 
   rime->free_context(&context);
   // strcat(buff, " √ ");
   // strcat(buff, "中国伟大 ");
   // strcat(buff, " ");
-  printf("%s\n", buff);
-  rime->destroy_session(session_id);
+  // printf("%s\n", buff);
+  // rime->destroy_session(session_id);
   if (is_last)
     return -1;
   return index + 1;
@@ -200,7 +199,8 @@ int rime_predict_word(void *method, const char *keystokes,
 {
   // memset(buff, 0, buff_len);
   buff[0] = 0; //有效避免重复;务必！！！！！
-  // printf("%d\n", session_id);
+               // printf("%d\n", session_id);
+  // strcat(buff, " ");
   return -1;
 }
 
@@ -208,7 +208,7 @@ int RimeMatchKeystokes(const char *keystokes, char *buff, int buff_len,
                        int index)
 {
   RimeApi *rime = rime_get_api();
-  RimeSessionId session_id;
+  // RimeSessionId session_id;
   if (index < 0)
     return -1;
 
@@ -219,7 +219,7 @@ int RimeMatchKeystokes(const char *keystokes, char *buff, int buff_len,
   printf("%s\n", stokes);
   //memset(buff, 0, buff_len);//无效
   buff[0] = 0; //有效避免重复;务必！！！！！
-  session_id = rime->create_session();
+  // session_id = rime->create_session();
   rime->simulate_key_sequence(session_id, stokes);
 
   //rime 中翻页用 “，”与“.”
@@ -248,7 +248,7 @@ int RimeMatchKeystokes(const char *keystokes, char *buff, int buff_len,
   // strcat(buff, " √ ");
   // strcat(buff, "中国伟大 ");
   // strcat(buff, " ");
-  rime->destroy_session(session_id);
+  // rime->destroy_session(session_id);
   if (is_last)
     return -1;
   return index + 1;
