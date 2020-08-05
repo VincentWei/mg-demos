@@ -13,7 +13,11 @@ a legacy MiniGUI component.
 1. Show or hide the IME window automatically.
 1. Show tooltip window when the user pressed a key.
 1. Switch different input methods.
-1. Convert the characters between different encodings.
+1. It is customizable (follow https://github.com/rime/plum)
+
+## Custom
+
+1. This project use `librime` as backend,so everyone can config the schema and dictionary just like `ibus-rime`.
 
 ## Copying
 
