@@ -184,8 +184,6 @@ int rime_translate_word(void *method, const char *keystokes,
   }
 
   rime->free_context(&context);
-  // strcat(buff, " √ ");
-  // strcat(buff, "中国伟大 ");
   // strcat(buff, " ");
   // printf("%s\n", buff);
   // rime->destroy_session(session_id);
@@ -245,8 +243,6 @@ int RimeMatchKeystokes(const char *keystokes, char *buff, int buff_len,
   }
 
   rime->free_context(&context);
-  // strcat(buff, " √ ");
-  // strcat(buff, "中国伟大 ");
   // strcat(buff, " ");
   // rime->destroy_session(session_id);
   if (is_last)

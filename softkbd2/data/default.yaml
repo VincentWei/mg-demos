@@ -5,7 +5,6 @@
 config_version: "0.15.minimal"
 
 schema_list:
-<<<<<<< HEAD
   - schema: luna_pinyin # 朙月拼音
   - schema: luna_pinyin_simp # 朙月拼音·简化字
   - schema: bopomofo # 注音符号输入
@@ -14,10 +13,6 @@ schema_list:
   - schema: terra_pinyin # 地球拼音
   - schema: cangjie5 # 倉頡五代·快打模式
   - schema: luna_pinyin_fluency # 朙月拼音·語句流
-=======
-  - schema: luna_pinyin
-  - schema: cangjie5
->>>>>>> 242dc849b3145081d513cb0dc0098a9ffe641c0a
 
 switcher:
   caption: 〔方案選單〕
