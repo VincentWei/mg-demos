@@ -375,7 +375,7 @@ static int init_rime_view_window(HWND hWnd, view_window_t *vw)
     vw->clear_elements = vw_clear_elements;
     vw->get_element = vw_get_element;
 
-    vw->view_font = CreateLogFontByName("ttf-HanSerif-rrncnn-*-16-UTF-8");
+    vw->view_font = CreateLogFontByName("ttf-fixed-srncnn-*-16-UTF-8");
 
     if (NULL == vw->view_font)
     {

@@ -416,7 +416,7 @@ static int init_en_view_window(HWND hWnd, view_window_t *vw)
     vw->clear_elements = vw_clear_elements;
     vw->get_element = vw_get_element;
 
-    vw->view_font = CreateLogFontByName("ttf-HanSans-rrncnn-*-16-UTF-8");
+    vw->view_font = CreateLogFontByName("ttf-fixed-rrncnn-*-16-UTF-8");
     if (NULL == vw->view_font)
     {
         _MY_PRINTF("create logfont for view window error.\n");
