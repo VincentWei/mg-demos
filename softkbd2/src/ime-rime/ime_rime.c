@@ -123,13 +123,12 @@ int rime_translate_word(void *method, const char *keystokes,
 {
   RimeApi *rime = rime_get_api();
   // RimeSessionId session_id;
-  //可能是长度限制，需要修改一下len(w中)
-  //TODO 翻页等功能
-  //index 表示当前页面号(多页功能)
-  //keystokes 表示按键序列
-  //buff存储转换后的文本,由于buff大小限制，仅仅表示一部分
-  //buff_len表示文本的长度
-  // 返回值，一种信号，表示下一页的页号
+
+  // index: page num(multipage mode)
+  // keystokes:
+  // buff: text
+  // buff_len: text max len
+  // @return: signal for next todo
 
   if (index < 0)
     return -1;
@@ -139,7 +138,7 @@ int rime_translate_word(void *method, const char *keystokes,
   memset(stokes, 0, 32);
   strcat(stokes, keystokes);
   printf("%s\n", stokes);
-  printf("%d\n", buff_len);
+  // printf("%d\n", buff_len);
   // if (strlen(stokes) > 5)
   // {
   //   stokes[5] = '\0';
