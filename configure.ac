@@ -93,7 +93,7 @@ PKG_CHECK_MODULES([MGEFF], [mgeff >= 1.2.0])
 PKG_CHECK_MODULES([MGNCS], [mgncs >= 1.2.0])
 PKG_CHECK_MODULES([MGNCS4TOUCH], [mgncs4touch >= 1.0.0])
 
-LIBS="$LIBS -lcrypt -lmgncs4touch -lmgncs -lmgeff -lmgplus -lmgutils -lrime $MINIGUI_LIBS"
+LIBS="$LIBS -lcrypt -lrime -lmgncs4touch -lmgncs -lmgeff -lmgplus -lmgutils $MINIGUI_LIBS"
 
 dnl ========================================================================
 dnl Write Output

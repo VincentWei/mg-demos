@@ -19,6 +19,18 @@ a legacy MiniGUI component.
 
 1. This project use `librime` as backend,so everyone can config the schema and dictionary just like `ibus-rime`.
 
+2. the config files of rime input engine is under `data/` directory.There are several schema:
+
+   1. `luna_pinyin` (the preset schema)
+   2. `luna_pinyin_simp`
+   3. `bopomofo`
+   4. `stroke`
+   5. `cangjie5`
+
+   You can delete useless file(schema and dictionary) and remove it from `default.yaml`
+
+3. Also,you can write schema and config dictionary by yourself.
+
 ## Copying
 
     Copyright (C) 2019 Beijing FMSoft Technologies Co., Ltd.

@@ -87,9 +87,7 @@ BOOL ime_rime_init(void)
   //  traits.distribution_name = "IME_Rime";
   rime->setup(&traits);
 
-  printf("rime 初始化");
   rime->set_notification_handler(&notification_handler, NULL);
-
   fprintf(stderr, "IME_Rime Initializing...\n");
   rime->initialize(NULL);
   Bool full_check = True;
@@ -104,7 +102,7 @@ BOOL ime_rime_init(void)
     return FALSE;
   }
   // rime->destroy_session(session_id);
-  printf("成功rime\n");
+  fprintf(stderr, "IME Rime Initialize Successfully.\n");
   return TRUE;
 }
 
@@ -137,7 +135,7 @@ int rime_translate_word(void *method, const char *keystokes,
   char stokes[32];
   memset(stokes, 0, 32);
   strcat(stokes, keystokes);
-  printf("%s\n", stokes);
+  // printf("%s\n", stokes);
   // printf("%d\n", buff_len);
   // if (strlen(stokes) > 5)
   // {
@@ -213,8 +211,8 @@ int RimeMatchKeystokes(const char *keystokes, char *buff, int buff_len,
   char stokes[32];
   memset(stokes, 0, 32);
   strcat(stokes, keystokes);
-  printf("%s\n", stokes);
-  //memset(buff, 0, buff_len);//无效
+  // printf("%s\n", stokes);
+  // memset(buff, 0, buff_len);//无效
   buff[0] = 0; //有效避免重复;务必！！！！！
   // session_id = rime->create_session();
   rime->simulate_key_sequence(session_id, stokes);

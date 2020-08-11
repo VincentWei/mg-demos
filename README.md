@@ -41,6 +41,14 @@ For more information, please visit:
 
 https://github.com/VincentWei/mg-demos/tree/master/softkbd
 
+## SoftKBD2
+
+Another soft keyboard using  [librime](https://github.com/rime/librime)  as backend.So we can follow this [tutorial](https://github.com/rime/home/wiki/CustomizationGuide) to config our input engine.
+
+For more information,please visit:
+
+https://github.com/VincentWei/mg-demos/tree/master/softkbd2
+
 ## Prerequisites
 
   * A C/C++ compiler compatible with C++ 11 (gcc 4.5+ or clang).
@@ -52,7 +60,7 @@ https://github.com/VincentWei/mg-demos/tree/master/softkbd
   * mGNCS4Touch: V1.2.2 or later
   * 3rd-party libraries:
     * chipmunk-5.3.1
-    * librime-1.5.3(softkbd2)
+    * librime-1.5.3(softkbd2 use it)
 
 ## Building
 
