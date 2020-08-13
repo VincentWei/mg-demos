@@ -83,6 +83,11 @@ if test "x$build_animate" = "xyes" ; then
     AC_DEFINE(KBD_ANIMATE, 1, [Define if soft keyboard animation is supported.])
 fi
 
+
+PKG_CHECK_MODULES([RIME], [rime >= 1.2.0],have_rime="yes",have_rime="no";
+"Softkbd2 requires librime 1.2.0+")
+
+
 dnl ========================================================================
 dnl check for installation of MiniGUI
 dnl ========================================================================
@@ -93,22 +98,36 @@ PKG_CHECK_MODULES([MGEFF], [mgeff >= 1.2.0])
 PKG_CHECK_MODULES([MGNCS], [mgncs >= 1.2.0])
 PKG_CHECK_MODULES([MGNCS4TOUCH], [mgncs4touch >= 1.0.0])
 
-LIBS="$LIBS -lcrypt -lrime -lmgncs4touch -lmgncs -lmgeff -lmgplus -lmgutils $MINIGUI_LIBS"
+LIBS="$LIBS -lcrypt -lmgncs4touch -lmgncs -lmgeff -lmgplus -lmgutils $MINIGUI_LIBS"
 
 dnl ========================================================================
 dnl Write Output
 
 AC_CHECK_DECLS(_MGRM_PROCESSES, minigui_runmode="procs", foo=bar, [#include <minigui/common.h>])
 AM_CONDITIONAL(MGRM_PROCESSES, test "x$minigui_runmode" = "xprocs")
+AM_CONDITIONAL(HAVE_RIME, test "x$have_rime" = "xyes")
+if test "x$have_rime" = "xyes"; then
+LIBS="$LIBS -lrime"
+KBD_FILES="\
+    softkbd/Makefile\
+    softkbd/src/Makefile\
+    softkbd2/Makefile\
+    softkbd2/src/Makefile\
+"
+else
+KBD_FILES="\
+    softkbd/Makefile\
+    softkbd/src/Makefile\
+"
+
+AC_MSG_NOTICE(Softkbd2 requires librime 1.2.0+)
+fi
 
 AC_OUTPUT(
     Makefile
     common/Makefile
     common/src/Makefile
-    softkbd/Makefile
-    softkbd/src/Makefile
-    softkbd2/Makefile
-    softkbd2/src/Makefile
+    $KBD_FILES
     cbplusui/Makefile
     cbplusui/res/Makefile
     cbplusui/misc/Makefile

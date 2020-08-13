@@ -126,19 +126,19 @@
 // resource name
 // global fonts
 #if (_MINIGUI_VERSION_CODE >= _VERSION_CODE(4, 0, 0))
-#define GLOBAL_FONT_XS "ttf-NotoSansCJK-rrncns-*-12-UTF-8"
-#define GLOBAL_FONT_SM "ttf-NotoSansCJK-rrncns-*-14-UTF-8"
-#define GLOBAL_FONT_NM "ttf-NotoSansCJK-rrncns-*-16-UTF-8"
-#define GLOBAL_FONT_LG "ttf-NotoSansCJK-rrncns-*-20-UTF-8"
-#define GLOBAL_FONT_XL "ttf-NotoSansCJK-rrncns-*-26-UTF-8"
-#define GLOBAL_FONT_XXL "ttf-NotoSansCJK-rrncns-*-36-UTF-8"
+#define GLOBAL_FONT_XS "ttf-HanSans-rrncns-*-12-UTF-8"
+#define GLOBAL_FONT_SM "ttf-HanSans-rrncns-*-14-UTF-8"
+#define GLOBAL_FONT_NM "ttf-HanSans-rrncns-*-16-UTF-8"
+#define GLOBAL_FONT_LG "ttf-HanSans-rrncns-*-20-UTF-8"
+#define GLOBAL_FONT_XL "ttf-HanSans-rrncns-*-26-UTF-8"
+#define GLOBAL_FONT_XXL "ttf-HanSans-rrncns-*-36-UTF-8"
 #else
-#define GLOBAL_FONT_XS "ttf-NotoSansCJK-srncnn-*-12-UTF-8"
-#define GLOBAL_FONT_SM "ttf-NotoSansCJK-srncnn-*-14-UTF-8"
-#define GLOBAL_FONT_NM "ttf-NotoSansCJK-srncnn-*-16-UTF-8"
-#define GLOBAL_FONT_LG "ttf-NotoSansCJK-srncnn-*-20-UTF-8"
-#define GLOBAL_FONT_XL "ttf-NotoSansCJK-srncnn-*-26-UTF-8"
-#define GLOBAL_FONT_XXL "ttf-NotoSansCJK-srncnn-*-36-UTF-8"
+#define GLOBAL_FONT_XS "ttf-HanSans-srncnn-*-12-UTF-8"
+#define GLOBAL_FONT_SM "ttf-HanSans-srncnn-*-14-UTF-8"
+#define GLOBAL_FONT_NM "ttf-HanSans-srncnn-*-16-UTF-8"
+#define GLOBAL_FONT_LG "ttf-HanSans-srncnn-*-20-UTF-8"
+#define GLOBAL_FONT_XL "ttf-HanSans-srncnn-*-26-UTF-8"
+#define GLOBAL_FONT_XXL "ttf-HanSans-srncnn-*-36-UTF-8"
 #endif
 
 // fonts for title, subtitle, and toast
