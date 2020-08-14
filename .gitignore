@@ -53,4 +53,5 @@ Makefile.in
 
 cbplusui/cbplusui
 softkbd/softkbd
-
+softkbd2/softkbd
+softkbd2/data/*.userdb/
