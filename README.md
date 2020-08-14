@@ -31,7 +31,7 @@ mechanism to interact with the system services.
 
 For more information, please visit:
 
-https://github.com/VincentWei/mg-demos/tree/master/cbplusui
+<https://github.com/VincentWei/mg-demos/tree/master/cbplusui>
 
 ## SoftKBD
 
@@ -43,11 +43,12 @@ https://github.com/VincentWei/mg-demos/tree/master/softkbd
 
 ## SoftKBD2
 
-Another soft keyboard using  [librime](https://github.com/rime/librime)  as backend.So we can follow this [tutorial](https://github.com/rime/home/wiki/CustomizationGuide) to config our input engine.
+This is another soft keyboard using [librime](https://github.com/rime/librime) as the input engine.
+You can follow this [tutorial](https://github.com/rime/home/wiki/CustomizationGuide) to config the engine.
 
-For more information,please visit:
+For more information, please visit:
 
-https://github.com/VincentWei/mg-demos/tree/master/softkbd2
+<https://github.com/VincentWei/mg-demos/tree/master/softkbd2>
 
 ## Prerequisites
 
@@ -60,33 +61,44 @@ https://github.com/VincentWei/mg-demos/tree/master/softkbd2
   * mGNCS4Touch: V1.2.2 or later
   * 3rd-party libraries:
     * chipmunk-5.3.1
-    * librime-1.5.3(softkbd2 use it)
+    * librime-1.5.3 (softkbd2 use it)
 
 ## Building
+
+If you are using MiniGUI 5.0, we strongly recommend you to build
+the demos by using the fetching and building scripts in
+`build-minigui-5.0`:
+
+<https://github.com/VincenWei/build-minigui-5.0>
 
 If you are using MiniGUI 4.0, we strongly recommend you to build
 the demos by using the fetching and building scripts of
 `build-minigui-4.0`:
 
-https://github.com/VincenWei/build-minigui-4.0
+<https://github.com/VincenWei/build-minigui-4.0>
 
 Or, if you are using MiniGUI 3.2, you can use the following commands
 to configure, make, install, and run the demos, once you have installed
 the dependent libraries listed above:
 
-    $ ./autogen.sh; # if you got the source from GitHub repo
-    $ ./configure;
-    $ make
+```
+$ ./autogen.sh; # if you got the source from GitHub repo
+$ ./configure;
+$ make
+```
 
 To run a demo:
 
-    $ cd cbplusui
-    $ ./cbplusui
+```
+$ cd cbplusui
+$ ./cbplusui
+```
 
 ## Configure Options
 
 The configure script provides the following options:
 
+```
     # Whether display tooltip window for soft keyboard:
     --enable-tooltip
     
@@ -95,6 +107,7 @@ The configure script provides the following options:
     
     # specify the size of soft keyboard:
     --with-softkbdsize=480x272/320x240/240x320
+```
 
 ## Directory
 
@@ -102,7 +115,7 @@ The configure script provides the following options:
 * `res/`: Common resource files used by all demos.
 * `cbplusui/`: The demo of CBPlusUI.
 * `softkbd/`: The demo of SoftKBD.
-* `softkbd2/`: Another demo of SoftKBD that use librime as backend.
+* `softkbd2/`: Another demo of SoftKBD that use librime as the backend.
 
 ## Copying
 

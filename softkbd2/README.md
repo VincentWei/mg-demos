@@ -1,11 +1,10 @@
-# SoftKBD
+# SoftKBD2
 
 This demo creates a soft keyboard for touch panel.
 You can use it to input English words (Predictive Text Input)
 and or Chinese words (Rime).
 
-Note the most source files are imported from mGi, which is
-a legacy MiniGUI component.
+Note the most source files are imported from mGi, which is a legacy MiniGUI component.
 
 ## Features
 
@@ -13,27 +12,32 @@ a legacy MiniGUI component.
 1. Show or hide the IME window automatically.
 1. Show tooltip window when the user pressed a key.
 1. Switch different input methods.
-1. It is customizable (follow https://github.com/rime/plum)
+1. It is customizable (follow <https://github.com/rime/plum>)
 
 ## Custom
 
-1. This project use `librime` as backend,so everyone can config the schema and dictionary just like `ibus-rime`.
+1) This project use `librime` as backend, so everyone can config the schema and
+   the dictionary just like `ibus-rime`.
 
-2. the config files of rime input engine is under `data/` directory.There are several schema:
-
+2) the config files of rime input engine is under `data/` directory.There are several schema:
    1. `luna_pinyin` (the preset schema)
-   2. `luna_pinyin_simp`
-   3. `bopomofo`
-   4. `stroke`
-   5. `cangjie5`
+   1. `luna_pinyin_simp`
+   1. `bopomofo`
+   1. `stroke`
+   1. `cangjie5`
 
    You can delete useless file(schema and dictionary) and remove it from `default.yaml`
 
-3. Also,you can write schema and config dictionary by yourself.
+3) Also, you can write schema and config dictionary by yourself.
+
+## Author
+
+(TBD)
 
 ## Copying
 
     Copyright (C) 2019 Beijing FMSoft Technologies Co., Ltd.
+    Copyright (C) 2020 Iorest
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
