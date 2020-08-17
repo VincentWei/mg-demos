@@ -32,7 +32,7 @@ Note the most source files are imported from mGi, which is a legacy MiniGUI comp
 
 ## Author
 
-(TBD)
+Iorest <loeison@foxmail.com> : (Apache License version 2.0)
 
 ## Copying
 
