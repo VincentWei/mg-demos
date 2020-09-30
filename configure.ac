@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.60)
-AC_INIT(mg-demos,1.0.1)
+AC_INIT(mg-demos, 1.0.2)
 AC_CONFIG_SRCDIR(cbplusui/main.cc)
 
 dnl ========================================================================
@@ -83,10 +83,8 @@ if test "x$build_animate" = "xyes" ; then
     AC_DEFINE(KBD_ANIMATE, 1, [Define if soft keyboard animation is supported.])
 fi
 
-
-PKG_CHECK_MODULES([RIME], [rime >= 1.2.0],have_rime="yes",have_rime="no";
-"Softkbd2 requires librime 1.2.0+")
-
+PKG_CHECK_MODULES([RIME], [rime >= 1.2.0], have_rime="yes", have_rime="no";
+    "Softkbd2 requires librime 1.2.0+")
 
 dnl ========================================================================
 dnl check for installation of MiniGUI
@@ -107,27 +105,17 @@ AC_CHECK_DECLS(_MGRM_PROCESSES, minigui_runmode="procs", foo=bar, [#include <min
 AM_CONDITIONAL(MGRM_PROCESSES, test "x$minigui_runmode" = "xprocs")
 AM_CONDITIONAL(HAVE_RIME, test "x$have_rime" = "xyes")
 if test "x$have_rime" = "xyes"; then
-LIBS="$LIBS -lrime"
-KBD_FILES="\
-    softkbd/Makefile\
-    softkbd/src/Makefile\
-    softkbd2/Makefile\
-    softkbd2/src/Makefile\
-"
-else
-KBD_FILES="\
-    softkbd/Makefile\
-    softkbd/src/Makefile\
-"
-
-AC_MSG_NOTICE(Softkbd2 requires librime 1.2.0+)
+    LIBS="$LIBS -lrime"
 fi
 
 AC_OUTPUT(
     Makefile
     common/Makefile
     common/src/Makefile
-    $KBD_FILES
+    softkbd/Makefile
+    softkbd/src/Makefile
+    softkbd2/Makefile
+    softkbd2/src/Makefile
     cbplusui/Makefile
     cbplusui/res/Makefile
     cbplusui/misc/Makefile
