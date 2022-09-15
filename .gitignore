@@ -48,6 +48,7 @@ am--include-marker
 /depcomp
 /install-sh
 /libtool
+/configure~
 Makefile
 Makefile.in
 
